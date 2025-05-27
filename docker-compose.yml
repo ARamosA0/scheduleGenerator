@@ -1,0 +1,45 @@
+services:
+  algoritm-service:
+    build:
+      context: ./algoritm-service
+    ports:
+    - "8088:8088"
+    volumes:
+      - ./algoritm-service:/app
+    command: cargo watch -x run
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports: 
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+    command: ./main
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    command: npm run dev
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

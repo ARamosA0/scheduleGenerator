@@ -1,0 +1,47 @@
+# Archivos generados por Rust (binarios, builds, logs)
+/target/
+**/*.rs.bk
+**/*.rs.bk2
+*.o
+*.so
+*.dll
+*.exe
+
+# Archivos de desarrollo y entornos
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Directorios de IDEs y editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*.code-workspace
+
+# Logs y caché
+*.log
+/logs/
+*.cache
+
+# Archivos específicos de Rocket
+# (Rocket.toml puede contener configuraciones sensibles, pero si es necesario para el proyecto, no lo ignores)
+# Rocket.toml
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Rustfmt (formateador de código)
+rustfmt.tmp
+
+# Cargo (gestor de paquetes de Rust)
+
+# Archivos de pruebas temporales
+/test-results/
+/coverage/
+
+# Archivos generados por macros o procedimientos
+/out/

@@ -1,0 +1,16 @@
+# Evitar archivos de build locales
+bin
+build
+*.exe
+*.out
+*.test
+
+# Archivos y carpetas comunes
+.git
+.gitignore
+*.log
+*.tmp
+*.swp
+.DS_Store
+.env
+node_modules

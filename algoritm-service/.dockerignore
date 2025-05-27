@@ -1,0 +1,16 @@
+# Evitar archivos innecesarios
+target
+**/target
+Cargo.lock
+Cargo.toml.orig
+*.rs.bk
+
+# Archivos y carpetas comunes
+.git
+.gitignore
+*.log
+*.tmp
+*.swp
+.DS_Store
+.env
+node_modules

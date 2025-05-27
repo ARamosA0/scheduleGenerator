@@ -1,0 +1,44 @@
+# Binarios compilados
+/bin/
+/exe/
+*.exe
+*.out
+*.so
+*.dll
+
+# Archivos de Go (generados o temporales)
+/go.sum
+/go.work
+/go.work.sum
+/vendor/
+
+# Directorios de dependencias y caché
+/pkg/
+/.go/
+/.gocache/
+
+# Archivos de desarrollo y entornos
+.env
+.env.local
+*.env
+
+# Logs y datos de pruebas
+*.log
+/tmp/
+/test-results/
+/coverage/
+
+# IDE/Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos específicos de Go (tests y benchmarks)
+*.test
+*.prof
+*.trace
