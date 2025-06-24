@@ -1,7 +1,9 @@
 package model
 
+import "gorm.io/gorm"
+
 type Group struct {
-	ID       int    `json:"id"`
+	gorm.Model
 	Name     string `json:"name"`
 	Semester string `json:"semester"`
 	Size     int    `json:"size"`

@@ -1,7 +1,9 @@
 package model
 
+import "gorm.io/gorm"
+
 type Subject struct {
-	ID               int    `json:"id"`
+	gorm.Model
 	Name             string `json:"name"`
 	Credits          string `json:"credits"`
 	RequiredRoomType int    `json:"required_room_type"`

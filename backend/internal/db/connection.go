@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -9,7 +8,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func main() {
+var DB *gorm.DB
+
+func GetConnection() (*gorm.DB, error) {
 	dsn := os.Getenv("DATABASE_URL")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -21,7 +22,9 @@ func main() {
 		log.Fatalf("Error getting generic DB: %v", err)
 	}
 
-	defer sqlDB.Close()
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	DB = db
+	return db, nil
 
-	fmt.Println("Conectado a PostgreSQL con GORM")
 }

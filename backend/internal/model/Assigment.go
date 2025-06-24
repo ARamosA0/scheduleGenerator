@@ -1,7 +1,9 @@
 package model
 
+import "gorm.io/gorm"
+
 type Assignment struct {
-	ID           int `json:"id"`
+	gorm.Model
 	SubjectID    int `json:"subject_id"`
 	TeacherID    int `json:"teacher_id"`
 	GroupID      int `json:"group_id"`
