@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var teacher = []model.Teacher{
+var teachers = []model.Teacher{
 	{
 		Name:           "Teacher1",
 		AvailableTimes: []time.Time{time.Now()}, // Use slice initialization
@@ -20,11 +20,19 @@ var teacher = []model.Teacher{
 	},
 }
 
+var teacher = model.Teacher{
+	Name:           "Teacher1",
+	AvailableTimes: []time.Time{time.Now()},
+}
+
 func GetAllTeachers(c echo.Context) error {
 	var teachers []model.Teacher
 
 	if err := db.DB.Find(&teachers).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error al obtener profesores"})
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error":   "Error al obtener profesores",
+			"details": err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, teachers)

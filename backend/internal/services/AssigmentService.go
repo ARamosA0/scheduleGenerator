@@ -8,10 +8,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func GetAllRoom(c echo.Context) error {
-	var room []model.Room
+func GetAllAssigments(c echo.Context) error {
+	var assigment []model.Assignment
 
-	if err := db.DB.Preload("RoomType").Find(&room).Error; err != nil {
+	if err := db.DB.Find(&assigment).Error; err != nil {
 		println(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error":   "Error al obtener salas",
@@ -19,5 +19,5 @@ func GetAllRoom(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, room)
+	return c.JSON(http.StatusOK, assigment)
 }

@@ -8,4 +8,9 @@ import (
 func RegisterRoutes(e *echo.Echo) {
 	api := e.Group("/api")
 	request.RegisterTeacherRoutes(api)
+	request.RegisterRoomRoutes(api)
+	request.RegisterAssigmentsRoutes(api)
+	request.RegisterGroupRoutes(api)
+	request.RegisterRuleRoutes(api)
+	request.RegisterSubjectRoutes(api)
 }

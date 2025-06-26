@@ -1,0 +1,74 @@
+{
+  "Group": [
+    {
+      "Name": "A",
+      "Semester": "",
+      "Size": 20
+    },
+    {
+      "Name": "B",
+      "Semester": "",
+      "Size": 20
+    }
+  ],
+  "Room": [
+    {
+      "Name": "101",
+      "Capacity": 20,
+      "RoomType": 1
+    },
+    {
+      "Name": "102",
+      "Capacity": 20,
+      "RoomType": 1
+    },
+    {
+      "Name": "103",
+      "Capacity": 20,
+      "RoomType": 1
+    }
+  ],
+  "RoomType": [
+    {
+      "Name": "Salon"
+    }
+  ],
+  "Rule": [
+    {
+      "Name": "",
+      "Description": "",
+      "Status": true
+    }
+  ],
+  "Subject": [
+    {
+      "Name": "Matematicas",
+      "Credits": "5",
+      "RequiredRoomType": 1
+    },
+    {
+      "Name": "Historia",
+      "Credits": "5",
+      "RequiredRoomType": 1
+    }
+  ],
+  "Teacher": [
+    {
+      "Name": "Teacher 1",
+      "AvailableTimes": ["2025-06-25T10:00:00Z", "2025-06-25T14:00:00Z"]
+    },
+    {
+      "Name": "Teacher 2",
+      "AvailableTimes": ["2025-06-26T08:30:00Z", "2025-06-26T11:00:00Z"]
+    }
+  ],
+  "Assigment": [
+    {
+      "SubjectID": 1,
+      "TeacherID": 1,
+      "GroupID": 1,
+      "RoomID": 1,
+      "HoursPerWeek": 1
+    }
+  ]
+}

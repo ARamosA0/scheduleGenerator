@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 
+	"backend.com/backend/internal/db"
 	"backend.com/backend/route"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -24,6 +25,7 @@ func main() {
 		return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
 	})
 
+	db.GetConnection()
 	route.RegisterRoutes(e)
 
 	httpPort := os.Getenv("PORT")
