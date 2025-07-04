@@ -1,4 +1,6 @@
+use crate::models::algoritm_config::AlgorithmConfig;
 use genevo::{operator::prelude::*, prelude::*, random::Rng, types::fmt::Display};
+use rocket::config;
 use std::fmt;
 
 // ==============================
@@ -87,7 +89,8 @@ fn calcular_colisiones(horario: &HorarioGenome, cursos: &[Curso]) -> usize {
     let mut colisiones = 0;
     let mut salon_ocupado = vec![vec![vec![false; NUM_BLOQUES]; NUM_DIAS]; NUM_SALONES];
     let mut profesor_ocupado = vec![vec![vec![false; NUM_BLOQUES]; NUM_DIAS]; NUM_PROFESORES];
-
+    println!("HORARIO: {:?}", horario);
+    println!("CURSO: {:?}", cursos);
     for clase in horario {
         // Verificar colisiones de salón
         if salon_ocupado[clase.salon_id][clase.dia][clase.bloque] {
@@ -181,30 +184,31 @@ impl GenomeBuilder<HorarioGenome> for HorarioBuilder {
 // ==============================
 // Visualización
 // ==============================
-impl Display for HorarioGenome {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut output = String::new();
-        let dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
-        let bloques = ["8-10", "10-12", "12-14", "14-16"];
+// impl Display for HorarioGenome {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         let mut output = String::new();
+//         let dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+//         let bloques = ["8-10", "10-12", "12-14", "14-16"];
 
-        for clase in self {
-            output += &format!(
-                "Curso {}: {} - Salon {}, {} - {}\n",
-                clase.curso_id,
-                dias[clase.dia],
-                (b'A' + clase.salon_id as u8) as char,
-                bloques[clase.bloque],
-                dias[clase.dia]
-            );
-        }
-        write!(f, "{}", output)
-    }
-}
+//         for clase in self {
+//             output += &format!(
+//                 "Curso {}: {} - Salon {}, {} - {}\n",
+//                 clase.curso_id,
+//                 dias[clase.dia],
+//                 (b'A' + clase.salon_id as u8) as char,
+//                 bloques[clase.bloque],
+//                 dias[clase.dia]
+//             );
+//         }
+//         write!(f, "{}", output)
+//     }
+// }
 
 // ==============================
 // Función principal
 // ==============================
-fn main() {
+
+pub fn execute_process(config: &AlgorithmConfig) -> Result<(), String> {
     let profesores = crear_profesores();
     let cursos = crear_cursos(&profesores);
     let _salones = crear_salones();
@@ -219,16 +223,19 @@ fn main() {
 
     let initial_population: Population<HorarioGenome> = build_population()
         .with_genome_builder(horario_builder)
-        .of_size(POPULATION_SIZE)
+        .of_size(config.population_size)
         .uniform_at_random();
 
     let mut simulacion = simulate(
         genetic_algorithm()
             .with_evaluation(fitness_calc.clone())
-            .with_selection(RouletteWheelSelector::new(SELECTION_RATIO, POPULATION_SIZE))
+            .with_selection(RouletteWheelSelector::new(
+                config.selection_ratio,
+                config.population_size,
+            ))
             .with_crossover(UniformCrossBreeder::new())
             .with_mutation(RandomValueMutator::new(
-                MUTATION_RATE,
+                config.mutation_rate,
                 ClaseProgramada {
                     curso_id: 0,
                     salon_id: 0,
@@ -236,23 +243,23 @@ fn main() {
                     bloque: 0,
                 },
                 ClaseProgramada {
-                    curso_id: NUM_CURSOS - 1,
-                    salon_id: NUM_SALONES - 1,
-                    dia: NUM_DIAS - 1,
-                    bloque: NUM_BLOQUES - 1,
+                    curso_id: config.num_cursos - 1,
+                    salon_id: config.num_salones - 1,
+                    dia: config.num_dias - 1,
+                    bloque: config.num_bloques - 1,
                 },
             ))
             .with_reinsertion(ElitistReinserter::new(
                 fitness_calc,
                 false,
-                REINSERTION_RATIO,
+                config.reinsertion_ratio,
             ))
             .with_initial_population(initial_population)
             .build(),
     )
     .until(or(
         FitnessLimit::new(100),
-        GenerationLimit::new(GENERATION_LIMIT),
+        GenerationLimit::new(config.generation_limit),
     ))
     .build();
 
@@ -273,7 +280,7 @@ fn main() {
                 println!("{}", stop_reason);
                 println!("Generación: {}", step.iteration);
                 println!("Mejor fitness: {}", best.solution.fitness);
-                println!("\nMEJOR HORARIO ENCONTRADO:\n{}", best.solution.genome);
+                // println!("\nMEJOR HORARIO ENCONTRADO:\n{}", best.solution.genome);
                 break;
             }
             Err(error) => {
@@ -282,4 +289,8 @@ fn main() {
             }
         }
     }
+
+    Ok(())
 }
+
+pub fn ejecutar_algoritmo_horario() {}
