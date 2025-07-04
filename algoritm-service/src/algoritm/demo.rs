@@ -195,20 +195,6 @@ pub fn run_genetic_algorithm() -> BestSolutionResult {
                     generation: best_solution.generation,
                     board: best_solution.solution.genome.as_board(),
                 };
-                // println!("{}", stop_reason);
-                // println!(
-                //     "Final result after {}: generation: {}, \
-                //          best solution with fitness {} found in generation {}, processing_time: {}",
-                //     duration.fmt(),
-                //     step.iteration,
-                //     best_solution.solution.fitness,
-                //     best_solution.generation,
-                //     processing_time.fmt()
-                // );
-                // for row in best_solution.solution.genome.as_board() {
-                //     println!("      {:?}", row);
-                // }
-                // break;
             }
             Err(error) => {
                 println!("{}", error);
