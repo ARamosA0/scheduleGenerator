@@ -15,7 +15,11 @@
                         class="flex flex-col items-center justify-center gap-2"
                     >
                         <h5>{{ cardData.subtitle }}</h5>
-                        <Button>{{ cardData.btnName }}</Button>
+                        <Button
+                            @click="router.push({ name: cardData.btnRedirect })"
+                        >
+                            {{ cardData.btnName }}
+                        </Button>
                     </div>
                 </template>
             </Card>
@@ -45,42 +49,45 @@ import { ref } from "vue";
 import Card from "primevue/card";
 import Button from "primevue/button";
 
+import { useRouter } from "vue-router";
+const router = useRouter();
+
 const cardsData = ref([
     {
         title: "Profesores",
         subtitle: "Gestionar información de docentes",
         btnName: "Administrar Profesores",
-        btnRedirect: "",
+        btnRedirect: "profesores",
     },
     {
         title: "Cursos",
         subtitle: "Gestionar materias y asignaturas",
         btnName: "Administrar Cursos",
-        btnRedirect: "",
+        btnRedirect: "cursos",
     },
     {
         title: "Salones",
         subtitle: "Gestionar aulas y espacios",
         btnName: "Administrar Salones",
-        btnRedirect: "",
+        btnRedirect: "salones",
     },
     {
         title: "Horarios",
         subtitle: "Configurar días y franjas horarias",
         btnName: "Configurar Horarios",
-        btnRedirect: "",
+        btnRedirect: "horarios",
     },
     {
         title: "Generar Horarios",
         subtitle: "Ejecutar algoritmo genético",
         btnName: "Generar Nuevo Horario",
-        btnRedirect: "",
+        btnRedirect: "generar",
     },
     {
         title: "Historial",
         subtitle: "Ver procesos ejecutados",
         btnName: "Ver Historial",
-        btnRedirect: "",
+        btnRedirect: "historial",
     },
 ]);
 

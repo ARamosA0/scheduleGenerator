@@ -7,5 +7,8 @@ import (
 
 func RegisterSubjectRoutes(g *echo.Group) {
 	subject := g.Group("/subject")
-	subject.GET("", services.GetAllAssigments)
+	subject.GET("", services.GetAllSubject)
+	subject.POST("", services.CreateSubject)
+	subject.PUT("/:id", services.UpdateSubject)
+	subject.DELETE("/:id", services.DeleteSubjject)
 }
