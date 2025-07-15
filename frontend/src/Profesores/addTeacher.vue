@@ -122,7 +122,9 @@ Profesor"
             ></Button>
             <Button
                 type="button"
-                :label="props.teacher !== null ? 'Update' : 'Save'"
+                :label="
+                    Object.keys(props.teacher).length > 0 ? 'Update' : 'Save'
+                "
                 @click="saveTeacher"
             ></Button>
         </div>

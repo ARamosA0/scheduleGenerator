@@ -10,23 +10,23 @@ const api = axios.create({
 
 export const getAllCourses = async () => {
   try {
-    const response = await api.get("/teachers");
+    const response = await api.get("/cursos");
     console.log("RESPONSE", response.data);
     return response.data;
   } catch (error) {
-    console.log("GET Teacher error", error);
+    console.log("GET Subject error", error);
     throw error;
   }
 };
-export const createCourse = async (teacher: any) =>
-  api.post("/teachers", teacher);
-export const updateCourse = async (teacher: any) => {
-  console.log("ID", teacher);
-  return api.put(`/teachers/${teacher.ID}`, teacher);
+export const createCourse = async (subject: any) =>
+  api.post("/cursos", subject);
+export const updateCourse = async (subject: any) => {
+  console.log("ID", subject);
+  return api.put(`/cursos/${subject.ID}`, subject);
 };
-export const deleteCourse = async (teacher: any) => {
-  console.log("DELETE ID", teacher);
-  return api.delete(`/teachers/${teacher.ID}`);
+export const deleteCourse = async (subject: any) => {
+  console.log("DELETE ID", subject);
+  return api.delete(`/cursos/${subject.ID}`);
 };
 
 export default api;

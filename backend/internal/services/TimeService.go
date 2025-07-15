@@ -8,10 +8,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func GetAllRoom(c echo.Context) error {
-	var room []model.Room
+func GetAllTemplates(c echo.Context) error {
+	var template []model.Template
 
-	if err := db.DB.Preload("RoomType").Find(&room).Error; err != nil {
+	if err := db.DB.Preload("RoomType").Find(&template).Error; err != nil {
 		println(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error":   "Error al obtener salas",
@@ -19,10 +19,10 @@ func GetAllRoom(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, room)
+	return c.JSON(http.StatusOK, template)
 }
 
-func GetRoom(c echo.Context) error {
+func GetTemplate(c echo.Context) error {
 	var room model.Room
 
 	if err := db.DB.Find(&room).Error; err != nil {
@@ -32,24 +32,25 @@ func GetRoom(c echo.Context) error {
 	return c.JSON(http.StatusOK, room)
 }
 
-func CreateRoom(c echo.Context) error {
-	var r model.Room
-	if err := c.Bind(&r); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "JSON inválido"})
+func CreateTemplate(c echo.Context) error {
+	var t model.Template
+
+	if err := c.Bind(&t); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
 	}
 
-	// if r.Code == "" {
-	// 	return c.JSON(http.StatusBadRequest, map[string]string{"error": "El campo 'name' es obligatorio"})
+	// if !json.Valid(t.DaysRange) {
+	// 	return echo.NewHTTPError(http.StatusBadRequest, "Invalid daysRange JSON")
 	// }
 
-	if err := db.DB.Create(&r).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error al guardar el curso"})
+	if err := db.DB.Create(&t).Error; err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create template")
 	}
 
-	return c.JSON(http.StatusCreated, r)
+	return c.JSON(http.StatusCreated, t)
 }
 
-func UpdateRoom(c echo.Context) error {
+func UpdateTemplate(c echo.Context) error {
 	id := c.Param("id")
 	var room model.Room
 	if err := db.DB.First(&room, id).Error; err != nil {
@@ -76,7 +77,7 @@ func UpdateRoom(c echo.Context) error {
 	return c.JSON(http.StatusCreated, room)
 }
 
-func DeleteRoom(c echo.Context) error {
+func DeleteTemplate(c echo.Context) error {
 	id := c.Param("id")
 
 	var room model.Room

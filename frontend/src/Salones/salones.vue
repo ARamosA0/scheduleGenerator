@@ -19,7 +19,7 @@
                     <p class="text-xl">Lista de Salones</p>
                     <p class="text-base">Gestiona los salones del sistema</p>
                 </div>
-                <Button label="Agregar profesor" />
+                <Button label="Agregar Salon" @click="open" />
             </div>
         </template>
         <template #content>
@@ -29,6 +29,7 @@
                 :rows="5"
                 :rowsPerPageOptions="[5, 10, 20, 50]"
                 tableStyle="min-width:50rem"
+                @rowSelect="onRowSelect"
             >
                 <Column field="codigo" header="Codigo" />
                 <Column field="nombre" header="Nombre" />
@@ -43,33 +44,87 @@
                 </Column>
                 <Column field="acciones" header="Acciones">
                     <template #body severity="secondary" rounded>
-                        <Button icon="pi pi-trash"></Button>
+                        <Button icon="pi pi-trash" @click="delRoom"></Button>
                     </template>
                 </Column>
             </DataTable>
         </template>
     </Card>
+    <addRoom
+        v-model:visible="openDialog"
+        :room="selectedData"
+        @save="saveRoom"
+        @update="update"
+    />
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Card from "primevue/card";
 import Button from "primevue/button";
 
+import addRoom from "../Salones/addRoom.vue";
+
+import {
+    getAllRooms,
+    createRoom,
+    updateRoom,
+    deleteRoom,
+} from "../../api/salonesApi";
+
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-const data = ref([
-    {
-        codigo: "CS101",
-        nombre: "Introducción a la Computación",
-        creditos: 3,
-        horas: 4,
-        semestre: "I",
-        carrera: "Ingeniería de Software",
-        acciones: "Editar",
+const data = ref([]);
+
+const selectedData = ref({});
+
+const openDialog = ref(false);
+const saved = ref(false);
+
+const getRooms = async () => {
+    const response = await getAllRooms();
+    console.log("RESPONSE", response);
+    data.value = response;
+};
+
+watch(
+    () => saved.value,
+    async (newVal: any) => {
+        console.log("newVAL", newVal);
+        await getRooms();
     },
-]);
+    { immediate: true },
+);
+
+const open = () => {
+    openDialog.value = true;
+    console.log("openDIALGO", openDialog.value);
+};
+
+const saveRoom = async (value: any) => {
+    console.log("SAVE TEACHER", value);
+    await createRoom(value);
+    saved.value = true;
+    await getRooms();
+};
+
+const update = async (value: any) => {
+    console.log("UPDATE TEACHER", value);
+    await updateRoom(value);
+    saved.value = true;
+    // await getTeachers();
+};
+
+const delRoom = async (value: any) => {
+    await deleteRoom(value);
+    saved.value = true;
+};
+
+const onRowSelect = async (value: any) => {
+    console.log("VALUE SELECTED", value);
+    openDialog.value = true;
+};
 </script>

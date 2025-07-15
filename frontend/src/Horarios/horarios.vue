@@ -6,11 +6,29 @@
             severity="secondary"
             @click="router.push({ name: 'home' })"
         ></Button>
-        <div class="col-span-11">
+        <div class="col-span-8">
             <p class="text-2xl font-bold">Configuración de Horarios</p>
             <p class="text-lg">
                 Define los días y franjas horarias disponibles
             </p>
+        </div>
+
+        <div class="col-span-3">
+            <Button
+                icon="pi pi-plus"
+                severity="secondary"
+                label="Agregar template"
+                class="w-full md:w-56"
+                @click="open"
+            />
+            <Select
+                v-model="selectedCity"
+                :options="cities"
+                showClear
+                optionLabel="name"
+                placeholder="Select a City"
+                class="w-full md:w-56 mt-3"
+            />
         </div>
     </div>
     <div v-for="(d, index) in data" :key="index">
@@ -61,12 +79,22 @@
             </template>
         </Card>
     </div>
+    <AddTemplate v-model:visible="openDialog" />
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
-import { Button, DataTable, Column, Card, ToggleSwitch } from "primevue";
+import {
+    Button,
+    DataTable,
+    Column,
+    Card,
+    ToggleSwitch,
+    Select,
+} from "primevue";
 import { useRouter } from "vue-router";
+import AddTemplate from "./addTemplate.vue";
 const router = useRouter();
+const openDialog = ref(false);
 
 const data = ref([
     {
@@ -100,4 +128,9 @@ const data = ref([
         dayData: [],
     },
 ]);
+
+const open = () => {
+    openDialog.value = true;
+    console.log("openDIALGO", openDialog.value);
+};
 </script>
