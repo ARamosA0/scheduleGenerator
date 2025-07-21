@@ -10,7 +10,7 @@ const api = axios.create({
 
 export const getAllCourses = async () => {
   try {
-    const response = await api.get("/cursos");
+    const response = await api.get("/subject");
     console.log("RESPONSE", response.data);
     return response.data;
   } catch (error) {
@@ -19,14 +19,14 @@ export const getAllCourses = async () => {
   }
 };
 export const createCourse = async (subject: any) =>
-  api.post("/cursos", subject);
+  api.post("/subject", subject);
 export const updateCourse = async (subject: any) => {
   console.log("ID", subject);
-  return api.put(`/cursos/${subject.ID}`, subject);
+  return api.put(`/subject/${subject.ID}`, subject);
 };
 export const deleteCourse = async (subject: any) => {
   console.log("DELETE ID", subject);
-  return api.delete(`/cursos/${subject.ID}`);
+  return api.delete(`/subject/${subject.ID}`);
 };
 
 export default api;

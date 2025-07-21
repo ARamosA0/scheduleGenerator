@@ -18,6 +18,7 @@ func ResetDatabase(db *gorm.DB) error {
 		&model.Rule{},
 		&model.Subject{},
 		&model.Teacher{},
+		&model.Template{},
 	}
 
 	for _, m := range models {

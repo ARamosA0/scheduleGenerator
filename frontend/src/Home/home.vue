@@ -72,10 +72,10 @@ const cardsData = ref([
         btnRedirect: "salones",
     },
     {
-        title: "Horarios",
+        title: "Template de Horas",
         subtitle: "Configurar días y franjas horarias",
-        btnName: "Configurar Horarios",
-        btnRedirect: "horarios",
+        btnName: "Configurar Template de Horarios",
+        btnRedirect: "template",
     },
     {
         title: "Generar Horarios",

@@ -12,6 +12,6 @@ COPY . .
 # RUN go build -v -o /usr/local/bin/app .
 
 COPY migrate/migrate.go ./migrate/
-RUN go build -o /usr/local/bin/migrate ./migrate
+# RUN go build -o /usr/local/bin/migrate ./migrate
 
 CMD ["air"]

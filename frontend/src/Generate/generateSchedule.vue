@@ -17,7 +17,7 @@
     <Tabs :value="data.tab" v-model="data.tab" class="w-full">
         <TabList>
             <Tab value="0">Seleccion de Datos</Tab>
-            <Tab value="1">Configuracion y Ejecucion</Tab>
+            <Tab value="1" disabled>Configuracion y Ejecucion</Tab>
         </TabList>
         <TabPanels>
             <TabPanel value="0">
@@ -25,6 +25,7 @@
                     :profesores="profesores"
                     :cursos="cursos"
                     :salones="salones"
+                    :templates="templates"
                     @change-tab="changeTab"
                 />
             </TabPanel>
@@ -32,6 +33,8 @@
                 <secondTab
                     :process-name="data.processName"
                     :process-data="data.processData"
+                    @start-process="runProcess"
+                    @tab1Data="tab1Data"
                 />
             </TabPanel>
         </TabPanels>
@@ -41,9 +44,14 @@
 import { Button, Tabs, TabList, Tab, TabPanels, TabPanel } from "primevue";
 import firstTab from "./firstTab.vue";
 import secondTab from "./secondTab.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
+import { getAllCourses } from "../../api/cursosApi";
+import { getAllRooms } from "../../api/salonesApi";
+import { getAllTeachers } from "../../api/profesoresApi";
+import { getAllTemplates } from "../../api/templateApi";
+import { createAssigment } from "../../api/assigmentApi";
 
 const data = ref({
     processName: "",
@@ -54,34 +62,37 @@ const data = ref({
         cruce: 0,
         elitismo: 0,
     },
+    selectedData: {
+        selectedTemplate: "",
+        selectedSubjects: [],
+        selectedRooms: [],
+        selectedTeachers: [],
+    },
     start: false,
     tab: "0",
 });
 
-const profesores = ref([
-    {
-        status: false,
-        title: "Juan Perez",
-        subtitle: "Matematica",
-        detalle: "Lunes, Miercoles, Viernes",
-    },
-]);
-const cursos = ref([
-    {
-        status: false,
-        title: "MAT101 - Cálculo I",
-        subtitle: "Ingeniería - Semestre 1",
-        detalle: "4 créditos • 6h/semana",
-    },
-]);
-const salones = ref([
-    {
-        status: false,
-        title: "A101 - Aula Magna",
-        subtitle: "Auditorio - Edificio A",
-        detalle: "Capacidad: 120 personas",
-    },
-]);
+const tab1Data = (value: any) => {
+    data.value.selectedData = value;
+};
+
+const profesores = ref();
+const cursos = ref();
+const salones = ref();
+const templates = ref();
 
 const changeTab = (value: any) => (data.value.tab = value);
+
+onMounted(async () => {
+    profesores.value = await getAllTeachers();
+    cursos.value = await getAllCourses();
+    salones.value = await getAllRooms();
+    templates.value = await getAllTemplates();
+
+    console.log("TEMPLATES", templates.value);
+});
+
+const runProcess = async (value: any) => {
+    await createAssigment(value);
+};
 </script>

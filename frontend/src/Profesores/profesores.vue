@@ -77,7 +77,7 @@ const router = useRouter();
 
 const data = ref([]);
 
-const selectedData = ref({});
+const selectedData = ref(null);
 
 const openDialog = ref(false);
 const saved = ref(false);

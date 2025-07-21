@@ -10,7 +10,7 @@ const api = axios.create({
 
 export const getAllRooms = async () => {
   try {
-    const response = await api.get("/rooms");
+    const response = await api.get("/room");
     console.log("RESPONSE", response.data);
     return response.data;
   } catch (error) {
@@ -18,14 +18,12 @@ export const getAllRooms = async () => {
     throw error;
   }
 };
-export const createRoom = async (room: any) => api.post("/rooms", room);
-export const updateRoom = async (room: any) => {
-  console.log("ID", room);
-  return api.put(`/rooms/${room.ID}`, room);
+export const createRoom = async (room: any) => {
+  console.log("API ROOM CREATE", room);
+  return api.post("/room", room);
 };
-export const deleteRoom = async (room: any) => {
-  console.log("DELETE ID", room);
-  return api.delete(`/rooms/${room.ID}`);
-};
+export const updateRoom = async (room: any) =>
+  api.put(`/room/${room.ID}`, room);
+export const deleteRoom = async (room: any) => api.delete(`/room/${room.ID}`);
 
 export default api;

@@ -6,16 +6,11 @@
                     <div
                         class="flex flex-col sm:flex-row sm:items-center p-6 gap-4"
                     >
-                        <Checkbox v-model="item.status" binary />
-                        <div class="flex flex-col">
-                            <p class="text-lg font-bold">
-                                {{ item.title }}
-                            </p>
-                            <p>{{ item.subtitle }}</p>
-                            <p class="text-sm">
-                                {{ item.detalle }}
-                            </p>
-                        </div>
+                        <slot
+                            name="item"
+                            :item="item"
+                            :onToggle="() => $emit('toggle', item)"
+                        />
                     </div>
                 </div>
             </div>
@@ -23,11 +18,12 @@
     </DataView>
 </template>
 <script setup lang="ts">
-import { DataView, Checkbox } from "primevue";
+import { DataView } from "primevue";
 const props = defineProps({
     data: {
         type: Array,
         required: true,
     },
 });
+defineEmits(["toggle"]);
 </script>

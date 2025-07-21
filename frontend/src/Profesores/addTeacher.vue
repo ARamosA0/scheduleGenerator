@@ -6,6 +6,7 @@
 Profesor"
         :style="{ width: '25rem' }"
     >
+        {{ props.teacher }}
         <span class="text-surface-500 dark:text-surface-400 block mb-8">
             Completa la información del profesor
         </span>
@@ -95,7 +96,7 @@ Profesor"
             </div>
             <div class="flex items-center gap-2">
                 <Checkbox
-                    v-model="data.teacher.availableDays"
+                    v-model="data.teacher.available_days"
                     inputId="ingredient4"
                     name="Viernes"
                     value="VIERNES"
@@ -122,9 +123,7 @@ Profesor"
             ></Button>
             <Button
                 type="button"
-                :label="
-                    Object.keys(props.teacher).length > 0 ? 'Update' : 'Save'
-                "
+                :label="props.teacher !== null ? 'Update' : 'Save'"
                 @click="saveTeacher"
             ></Button>
         </div>

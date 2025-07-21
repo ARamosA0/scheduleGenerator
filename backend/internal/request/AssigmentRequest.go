@@ -8,4 +8,7 @@ import (
 func RegisterAssigmentsRoutes(g *echo.Group) {
 	assigment := g.Group("/assigment")
 	assigment.GET("", services.GetAllAssigments)
+	assigment.POST("", services.CreateAssigment)
+	assigment.PUT("/:id", services.UpdateAssigment)
+	assigment.DELETE("/:id", services.DeleteAssigment)
 }

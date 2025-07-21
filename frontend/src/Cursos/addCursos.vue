@@ -84,10 +84,10 @@
             <label for="name" class="font-semibold">Salon Requerido</label>
 
             <Select
-                v-model="data.course.required_room_type_id"
-                editable
+                v-model="data.course.required_room_type"
                 :options="rooms"
-                optionLabel="name"
+                optionLabel="label"
+                optionValue="value"
                 placeholder="Seleccionar salon"
                 class="w-full"
             />
@@ -101,17 +101,16 @@
             ></Button>
             <Button
                 type="button"
-                :label="
-                    Object.keys(props.course).length > 0 ? 'Update' : 'Save'
-                "
+                :label="props.course !== null ? 'Update' : 'Save'"
                 @click="saveTeacher"
             ></Button>
         </div>
     </Dialog>
 </template>
 <script setup lang="ts">
-import { ref, watch, toRef } from "vue";
+import { ref, watch, toRef, onMounted } from "vue";
 import { Dialog, Button, InputText, InputNumber, Select } from "primevue";
+import { RoomTypes } from "../common/enums";
 
 const props = defineProps({
     course: {
@@ -126,6 +125,11 @@ const props = defineProps({
 
 const emit = defineEmits(["update:visible", "save", "update"]);
 
+onMounted(async () => {
+    // const allRooms = await getAllRooms();
+    // data.value.rooms = allRooms;
+});
+
 const data = ref({
     visible: false,
     course: {
@@ -137,7 +141,7 @@ const data = ref({
         career: "",
         requirements: "",
         description: "",
-        required_room_type_id: 1,
+        required_room_type: 1,
     },
 });
 const courseRef = toRef(props, "course");
@@ -146,11 +150,10 @@ watch(courseRef, (newValue: any) => {
 });
 
 const rooms = ref([
-    { name: "New York", code: "1" },
-    { name: "Rome", code: "2" },
-    { name: "London", code: "3" },
-    { name: "Istanbul", code: "4" },
-    { name: "Paris", code: "5" },
+    { label: "Aula", value: RoomTypes.Classroom },
+    { label: "Laboratorio", value: RoomTypes.Laboratory },
+    { label: "Auditorio", value: RoomTypes.Auditorium },
+    { label: "Oficina", value: RoomTypes.Office },
 ]);
 
 const closeDialog = () => {

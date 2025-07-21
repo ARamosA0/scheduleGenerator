@@ -17,7 +17,7 @@
                 <p>Nombre del Proceso</p>
                 <InputText
                     type="text"
-                    v-model="props.processName"
+                    v-model="configurationData.processName"
                     variant="filled"
                     class="w-full mt-3"
                 />
@@ -25,10 +25,10 @@
                     <div class="mt-3">
                         <p class="mt-3">
                             Tamaño de Población:
-                            {{ props.processData.poblacion }}
+                            {{ configurationData.poblacion }}
                         </p>
                         <Slider
-                            v-model="props.processData.poblacion"
+                            v-model="configurationData.poblacion"
                             :min="100"
                             :max="5000"
                             class="w-full mt-3"
@@ -40,10 +40,10 @@
                     <div class="mt-3">
                         <p class="mt-3">
                             Número de Generaciones:
-                            {{ props.processData.generaciones }}
+                            {{ configurationData.generaciones }}
                         </p>
                         <Slider
-                            v-model="props.processData.generaciones"
+                            v-model="configurationData.generaciones"
                             :min="0"
                             :max="100"
                             class="w-full mt-3"
@@ -55,10 +55,10 @@
                     <div class="mt-3">
                         <p class="mt-3">
                             Tasa de Mutación:
-                            {{ props.processData.mutacion }}
+                            {{ configurationData.mutacion }}
                         </p>
                         <Slider
-                            v-model="props.processData.mutacion"
+                            v-model="configurationData.mutacion"
                             :min="0"
                             :max="1"
                             :step="0.01"
@@ -69,10 +69,10 @@
                     <div class="mt-3">
                         <p class="mt-3">
                             Tasa de Cruce:
-                            {{ props.processData.cruce }}
+                            {{ configurationData.cruce }}
                         </p>
                         <Slider
-                            v-model="props.processData.cruce"
+                            v-model="configurationData.cruce"
                             :min="0"
                             :max="1"
                             :step="0.01"
@@ -85,10 +85,10 @@
                     <div class="mt-3">
                         <p class="mt-3">
                             Elitismo:
-                            {{ props.processData.elitismo }}
+                            {{ configurationData.elitismo }}
                         </p>
                         <Slider
-                            v-model="props.processData.elitismo"
+                            v-model="configurationData.elitismo"
                             :min="0"
                             :max="1"
                             :step="0.01"
@@ -102,8 +102,9 @@
                 <div class="mt-3">
                     <Button
                         label="Iniciar Generacion"
-                        :disabled="!startProcess"
+                        :disabled="validacionDatos"
                         icon="pi pi-play"
+                        @click="runProcess"
                     />
                 </div>
             </template>
@@ -168,7 +169,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { Button, Card, InputText, Slider } from "primevue";
 import ProgressBar from "primevue/progressbar";
 const props = defineProps({
@@ -182,6 +183,15 @@ const props = defineProps({
     },
 });
 
+const configurationData = ref({
+    processName: "",
+    poblacion: 0,
+    generaciones: 0,
+    mutacion: 0,
+    cruce: 0,
+    elitismo: 0,
+});
+
 const processStatus = ref({
     progrecion: 0,
     generacion: 0,
@@ -191,4 +201,20 @@ const processStatus = ref({
 const startProcess = ref(false);
 
 const emits = defineEmits(["startProcess"]);
+
+const runProcess = () => {
+    startProcess.value = true;
+    emits("startProcess", configurationData);
+};
+
+const validacionDatos = computed(() => {
+    return (
+        configurationData.value.processName === "" ||
+        configurationData.value.poblacion === 0 ||
+        configurationData.value.generaciones === 0 ||
+        configurationData.value.mutacion === 0 ||
+        configurationData.value.cruce === 0 ||
+        configurationData.value.elitismo === 0
+    );
+});
 </script>

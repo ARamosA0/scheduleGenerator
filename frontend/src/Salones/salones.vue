@@ -31,17 +31,11 @@
                 tableStyle="min-width:50rem"
                 @rowSelect="onRowSelect"
             >
-                <Column field="codigo" header="Codigo" />
-                <Column field="nombre" header="Nombre" />
-                <Column field="creditos" header="Capacidad" />
-                <Column field="horas" header="Tipo" />
-                <Column field="horas" header="Ubicacion" />
-                <Column field="horas" header="Equipamiento" />
-                <Column field="horas" header="Estado">
-                    <template #body="data">
-                        <Tag :value="data" severity="secondary" />
-                    </template>
-                </Column>
+                <Column field="code" header="Codigo" />
+                <Column field="name" header="Nombre" />
+                <Column field="capacity" header="Capacidad" />
+                <Column field="room_type" header="Tipo" />
+                <Column field="building" header="Ubicacion" />
                 <Column field="acciones" header="Acciones">
                     <template #body severity="secondary" rounded>
                         <Button icon="pi pi-trash" @click="delRoom"></Button>
@@ -79,7 +73,7 @@ const router = useRouter();
 
 const data = ref([]);
 
-const selectedData = ref({});
+const selectedData = ref(null);
 
 const openDialog = ref(false);
 const saved = ref(false);
@@ -105,14 +99,14 @@ const open = () => {
 };
 
 const saveRoom = async (value: any) => {
-    console.log("SAVE TEACHER", value);
+    console.log("SAVE ROOM", value);
     await createRoom(value);
     saved.value = true;
     await getRooms();
 };
 
 const update = async (value: any) => {
-    console.log("UPDATE TEACHER", value);
+    console.log("UPDATE ROOM", value);
     await updateRoom(value);
     saved.value = true;
     // await getTeachers();

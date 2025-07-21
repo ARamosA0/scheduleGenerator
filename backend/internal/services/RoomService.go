@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"net/http"
 
 	"backend.com/backend/internal/db"
@@ -11,7 +12,7 @@ import (
 func GetAllRoom(c echo.Context) error {
 	var room []model.Room
 
-	if err := db.DB.Preload("RoomType").Find(&room).Error; err != nil {
+	if err := db.DB.Find(&room).Error; err != nil {
 		println(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error":   "Error al obtener salas",
@@ -38,6 +39,8 @@ func CreateRoom(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "JSON inválido"})
 	}
 
+	fmt.Printf("SALON RECIBIDO %+v\n", r)
+
 	// if r.Code == "" {
 	// 	return c.JSON(http.StatusBadRequest, map[string]string{"error": "El campo 'name' es obligatorio"})
 	// }
@@ -56,6 +59,8 @@ func UpdateRoom(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "Profesor no encontrado"})
 	}
 
+	fmt.Printf("UPDATE SALON RECIBIDO %+v\n", room)
+
 	var input model.Room
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "JSON inválido"})
@@ -64,7 +69,7 @@ func UpdateRoom(c echo.Context) error {
 	room.Code = input.Code
 	room.Name = input.Name
 	room.Capacity = input.Capacity
-	room.RoomTypeID = input.RoomTypeID
+	room.RoomType = input.RoomType
 	room.Floor = input.Floor
 	room.Building = input.Building
 	room.Observations = input.Observations

@@ -68,7 +68,7 @@ func UpdateSubject(c echo.Context) error {
 	subject.Semester = input.Semester
 	subject.Career = input.Career
 	subject.Requirements = input.Requirements
-	subject.RequiredRoomTypeID = input.RequiredRoomTypeID
+	subject.RequiredRoomType = input.RequiredRoomType
 
 	if err := db.DB.Save(&subject).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "No se pudo actualizar"})

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"net/http"
 
 	"backend.com/backend/internal/db"
@@ -9,9 +10,9 @@ import (
 )
 
 func GetAllTemplates(c echo.Context) error {
-	var template []model.Template
+	var templates []model.Template
 
-	if err := db.DB.Preload("RoomType").Find(&template).Error; err != nil {
+	if err := db.DB.Find(&templates).Error; err != nil {
 		println(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error":   "Error al obtener salas",
@@ -19,14 +20,15 @@ func GetAllTemplates(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, template)
+	return c.JSON(http.StatusOK, templates)
 }
 
 func GetTemplate(c echo.Context) error {
+	id := c.Param("id")
 	var room model.Room
 
-	if err := db.DB.Find(&room).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error al obtener profesores"})
+	if err := db.DB.Find(&room, id).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error al obtener template"})
 	}
 
 	return c.JSON(http.StatusOK, room)
@@ -35,10 +37,12 @@ func GetTemplate(c echo.Context) error {
 func CreateTemplate(c echo.Context) error {
 	var t model.Template
 
+	fmt.Printf("TEMPLATE RECIBIDO %+v\n", t)
 	if err := c.Bind(&t); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
 	}
 
+	fmt.Printf("TEMPLATE RECIBIDO %+v\n", t)
 	// if !json.Valid(t.DaysRange) {
 	// 	return echo.NewHTTPError(http.StatusBadRequest, "Invalid daysRange JSON")
 	// }
@@ -52,23 +56,23 @@ func CreateTemplate(c echo.Context) error {
 
 func UpdateTemplate(c echo.Context) error {
 	id := c.Param("id")
-	var room model.Room
+	var room model.Template
 	if err := db.DB.First(&room, id).Error; err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Profesor no encontrado"})
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "Template no encontrado"})
 	}
 
-	var input model.Room
+	var input model.Template
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "JSON inválido"})
 	}
 
-	room.Code = input.Code
-	room.Name = input.Name
-	room.Capacity = input.Capacity
-	room.RoomTypeID = input.RoomTypeID
-	room.Floor = input.Floor
-	room.Building = input.Building
-	room.Observations = input.Observations
+	// room.Code = input.Code
+	// room.Name = input.Name
+	// room.Capacity = input.Capacity
+	// room.RoomTypeID = input.RoomTypeID
+	// room.Floor = input.Floor
+	// room.Building = input.Building
+	// room.Observations = input.Observations
 
 	if err := db.DB.Save(&room).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "No se pudo actualizar"})
@@ -83,13 +87,13 @@ func DeleteTemplate(c echo.Context) error {
 	var room model.Room
 	if err := db.DB.First(&room, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{
-			"error": "Profesor no encontrado",
+			"error": "Template no encontrado",
 		})
 	}
 
 	if err := db.DB.Delete(&room).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"error": "Error al eliminar el profesor",
+			"error": "Error al eliminar el template",
 		})
 	}
 

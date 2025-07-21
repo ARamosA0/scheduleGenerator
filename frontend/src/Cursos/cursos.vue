@@ -62,14 +62,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Card from "primevue/card";
 import Button from "primevue/button";
 
 import addCursos from "./addCursos.vue";
-const selectedData = ref({});
+const selectedData = ref(null);
 
 import {
     getAllCourses,
@@ -84,22 +84,21 @@ const router = useRouter();
 const openDialog = ref(false);
 const saved = ref(false);
 
-const data = ref([
-    {
-        code: "CS101",
-        name: "Introducción a la Computación",
-        creadits: 3,
-        hours: 4,
-        semester: "I",
-        career: "Ingeniería de Software",
-    },
-]);
+const data = ref([]);
 
 const getCourse = async () => {
     const response = await getAllCourses();
     console.log("RESPONSE", response);
     data.value = response;
 };
+
+watch(
+    () => saved.value,
+    async (newVal: any) => {
+        await getCourse();
+    },
+    { immediate: true },
+);
 
 const open = () => {
     openDialog.value = true;
