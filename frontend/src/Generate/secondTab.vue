@@ -25,10 +25,10 @@
                     <div class="mt-3">
                         <p class="mt-3">
                             Tamaño de Población:
-                            {{ configurationData.poblacion }}
+                            {{ configurationData.population }}
                         </p>
                         <Slider
-                            v-model="configurationData.poblacion"
+                            v-model="configurationData.population"
                             :min="100"
                             :max="5000"
                             class="w-full mt-3"
@@ -40,10 +40,10 @@
                     <div class="mt-3">
                         <p class="mt-3">
                             Número de Generaciones:
-                            {{ configurationData.generaciones }}
+                            {{ configurationData.generations }}
                         </p>
                         <Slider
-                            v-model="configurationData.generaciones"
+                            v-model="configurationData.generations"
                             :min="0"
                             :max="100"
                             class="w-full mt-3"
@@ -55,10 +55,10 @@
                     <div class="mt-3">
                         <p class="mt-3">
                             Tasa de Mutación:
-                            {{ configurationData.mutacion }}
+                            {{ configurationData.mutation }}
                         </p>
                         <Slider
-                            v-model="configurationData.mutacion"
+                            v-model="configurationData.mutation"
                             :min="0"
                             :max="1"
                             :step="0.01"
@@ -69,10 +69,10 @@
                     <div class="mt-3">
                         <p class="mt-3">
                             Tasa de Cruce:
-                            {{ configurationData.cruce }}
+                            {{ configurationData.crossOver }}
                         </p>
                         <Slider
-                            v-model="configurationData.cruce"
+                            v-model="configurationData.crossOver"
                             :min="0"
                             :max="1"
                             :step="0.01"
@@ -85,10 +85,10 @@
                     <div class="mt-3">
                         <p class="mt-3">
                             Elitismo:
-                            {{ configurationData.elitismo }}
+                            {{ configurationData.elitism }}
                         </p>
                         <Slider
-                            v-model="configurationData.elitismo"
+                            v-model="configurationData.elitism"
                             :min="0"
                             :max="1"
                             :step="0.01"
@@ -185,11 +185,11 @@ const props = defineProps({
 
 const configurationData = ref({
     processName: "",
-    poblacion: 0,
-    generaciones: 0,
-    mutacion: 0,
-    cruce: 0,
-    elitismo: 0,
+    population: 0,
+    generations: 0,
+    mutation: 0,
+    crossOver: 0,
+    elitism: 0,
 });
 
 const processStatus = ref({
@@ -204,7 +204,7 @@ const emits = defineEmits(["startProcess"]);
 
 const runProcess = () => {
     startProcess.value = true;
-    emits("startProcess", configurationData);
+    emits("startProcess", configurationData.value);
 };
 
 const validacionDatos = computed(() => {

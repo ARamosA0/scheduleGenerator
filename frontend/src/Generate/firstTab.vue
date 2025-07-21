@@ -21,7 +21,7 @@
                             Selecciona los profesores disponibles
                         </p>
                     </div>
-                    <Button label="Seleccioar Todos" />
+                    <Button label="Seleccionar Todos" />
                 </div>
             </template>
             <template #content>
@@ -49,12 +49,10 @@
             <template #title>
                 <div class="flex justify-between items-start">
                     <div>
-                        <p>Profesores</p>
-                        <p class="text-sm">
-                            Selecciona los profesores disponibles
-                        </p>
+                        <p>Cursos</p>
+                        <p class="text-sm">Selecciona los cursos a programar</p>
                     </div>
-                    <Button label="Seleccioar Todos" />
+                    <Button label="Seleccionar Todos" />
                 </div>
             </template>
             <template #content>
@@ -85,12 +83,12 @@
             <template #title>
                 <div class="flex justify-between items-start">
                     <div>
-                        <p>Profesores</p>
+                        <p>Salones</p>
                         <p class="text-sm">
-                            Selecciona los profesores disponibles
+                            Selecciona los salones disponibles
                         </p>
                     </div>
-                    <Button label="Seleccioar Todos" />
+                    <Button label="Seleccionar Todos" />
                 </div>
             </template>
             <template #content>
@@ -192,6 +190,7 @@ const selectedData = ref({
 
 const emits = defineEmits(["changeTab", "tab1Data"]);
 const ChangeTab = () => {
+    console.log("TAB1DATA", selectedData.value);
     emits("changeTab", "1");
     emits("tab1Data", selectedData.value);
 };

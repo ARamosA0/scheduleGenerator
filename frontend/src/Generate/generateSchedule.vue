@@ -27,15 +27,11 @@
                     :salones="salones"
                     :templates="templates"
                     @change-tab="changeTab"
+                    @tab1Data="tab1Data"
                 />
             </TabPanel>
             <TabPanel value="1">
-                <secondTab
-                    :process-name="data.processName"
-                    :process-data="data.processData"
-                    @start-process="runProcess"
-                    @tab1Data="tab1Data"
-                />
+                <secondTab @start-process="runProcess" />
             </TabPanel>
         </TabPanels>
     </Tabs>
@@ -54,13 +50,18 @@ import { getAllTemplates } from "../../api/templateApi";
 import { createAssigment } from "../../api/assigmentApi";
 
 const data = ref({
-    processName: "",
+    start: false,
+    tab: "0",
+});
+
+const runProcessData = ref({
     processData: {
-        poblacion: 0,
-        generaciones: 0,
-        mutacion: 0,
-        cruce: 0,
-        elitismo: 0,
+        processName: "",
+        population: 0,
+        generations: 0,
+        mutation: 0,
+        crossOver: 0,
+        elitism: 0,
     },
     selectedData: {
         selectedTemplate: "",
@@ -68,12 +69,11 @@ const data = ref({
         selectedRooms: [],
         selectedTeachers: [],
     },
-    start: false,
-    tab: "0",
 });
 
 const tab1Data = (value: any) => {
-    data.value.selectedData = value;
+    console.log("VALUE TAB1", value);
+    runProcessData.value.selectedData = value;
 };
 
 const profesores = ref();
@@ -93,6 +93,9 @@ onMounted(async () => {
 });
 
 const runProcess = async (value: any) => {
-    await createAssigment(value);
+    console.log("TAB2VALUE", value);
+    runProcessData.value.processData = value;
+    console.log("RUNPROCESS", runProcessData.value);
+    await createAssigment(runProcessData.value);
 };
 </script>

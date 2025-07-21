@@ -18,8 +18,11 @@ export const getAllAssigment = async () => {
     throw error;
   }
 };
-export const createAssigment = async (assigment: any) =>
-  api.post("/assigment", assigment);
+export const createAssigment = async (assigment: any) => {
+  console.log("ASSIGMENT", assigment);
+  return api.post("/assigment", assigment);
+};
+
 export const updateAssigment = async (assigment: any) => {
   console.log("ID", assigment);
   return api.put(`/assigment/${assigment.ID}`, assigment);
