@@ -69,10 +69,10 @@
                     <div class="mt-3">
                         <p class="mt-3">
                             Tasa de Cruce:
-                            {{ configurationData.crossOver }}
+                            {{ configurationData.cross_over }}
                         </p>
                         <Slider
-                            v-model="configurationData.crossOver"
+                            v-model="configurationData.cross_over"
                             :min="0"
                             :max="1"
                             :step="0.01"
@@ -84,11 +84,11 @@
                     </div>
                     <div class="mt-3">
                         <p class="mt-3">
-                            Elitismo:
-                            {{ configurationData.elitism }}
+                            Ratio de Seleccion:
+                            {{ configurationData.selection }}
                         </p>
                         <Slider
-                            v-model="configurationData.elitism"
+                            v-model="configurationData.selection"
                             :min="0"
                             :max="1"
                             :step="0.01"
@@ -96,6 +96,22 @@
                         />
                         <p class="mt-3">
                             Porcentaje de mejores individuos que se preservan
+                        </p>
+                    </div>
+                    <div class="mt-3">
+                        <p class="mt-3">
+                            Ratio de reinsercion:
+                            {{ configurationData.reinsertion }}
+                        </p>
+                        <Slider
+                            v-model="configurationData.reinsertion"
+                            :min="0"
+                            :max="1"
+                            :step="0.01"
+                            class="w-full mt-3"
+                        />
+                        <p class="mt-3">
+                            Porcentaje de individuos que se reinsertan
                         </p>
                     </div>
                 </div>
@@ -188,8 +204,9 @@ const configurationData = ref({
     population: 0,
     generations: 0,
     mutation: 0,
-    crossOver: 0,
-    elitism: 0,
+    cross_over: 0,
+    selection: 0,
+    reinsertion: 0,
 });
 
 const processStatus = ref({
@@ -210,11 +227,12 @@ const runProcess = () => {
 const validacionDatos = computed(() => {
     return (
         configurationData.value.processName === "" ||
-        configurationData.value.poblacion === 0 ||
-        configurationData.value.generaciones === 0 ||
-        configurationData.value.mutacion === 0 ||
-        configurationData.value.cruce === 0 ||
-        configurationData.value.elitismo === 0
+        configurationData.value.population === 0 ||
+        configurationData.value.generations === 0 ||
+        configurationData.value.mutation === 0 ||
+        configurationData.value.cross_over === 0 ||
+        configurationData.value.reinsertion === 0 ||
+        configurationData.value.selection === 0
     );
 });
 </script>

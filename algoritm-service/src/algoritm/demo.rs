@@ -188,7 +188,7 @@ pub fn run_genetic_algorithm() -> BestSolutionResult {
                     println!("      {:?}", row);
                 }
             }
-            Ok(SimResult::Final(step, processing_time, duration, stop_reason)) => {
+            Ok(SimResult::Final(step, _processing_time, _duration, _stop_reason)) => {
                 let best_solution = step.result.best_solution;
                 return BestSolutionResult {
                     fitness: best_solution.solution.fitness,

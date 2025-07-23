@@ -65,11 +65,10 @@ func CreateAssigment(c echo.Context) error {
 	subjectsJSON, _ := json.Marshal(process.SelectedData.SelectedSubjects)
 	teachersJSON, _ := json.Marshal(process.SelectedData.SelectedTeachers)
 	roomsJSON, _ := json.Marshal(process.SelectedData.SelectedRooms)
+	templateJSON, _ := json.Marshal(template)
 
-	// var a model.Assignment
-	a := model.Assignment{
-		TemplateID:  process.SelectedData.SelectedTemplate,
-		Template:    template,
+	data := model.Assignment{
+		Template:    templateJSON,
 		Subjects:    subjectsJSON,
 		Teachers:    teachersJSON,
 		Rooms:       roomsJSON,
@@ -78,15 +77,30 @@ func CreateAssigment(c echo.Context) error {
 		Generations: process.ProcessData.Generations,
 		Mutation:    process.ProcessData.Mutation,
 		CrossOver:   process.ProcessData.CrossOver,
-		Elitism:     process.ProcessData.Elitism,
+		Selection:   process.ProcessData.Selection,
+		Reinsertion: process.ProcessData.Reinsertion,
 	}
-	fmt.Printf("Assigment %+v\n", a)
+	// API DE RUST
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("ERROR SERIALIZANDO JSON PARA RUST:", err)
+	} else {
+		resp, err := http.Post("http://schedulegenerator-algoritm-service-1:8088/generar", "application/json", bytes.NewBuffer(jsonData))
+		if err != nil {
+			fmt.Println("ERROR LLAMANDO A API RUST:", err)
+		} else {
+			defer resp.Body.Close()
+			body, _ := io.ReadAll(resp.Body)
+			fmt.Println("RESPUESTA DE RUST:", string(body))
+		}
+	}
+	fmt.Printf("Assigment %+v\n", data)
 
-	if err := db.DB.Create(&a).Error; err != nil {
+	if err := db.DB.Create(&data).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error al guardar el curso"})
 	}
 
-	return c.JSON(http.StatusCreated, a)
+	return c.JSON(http.StatusCreated, data)
 }
 
 func UpdateAssigment(c echo.Context) error {

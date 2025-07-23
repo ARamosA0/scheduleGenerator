@@ -1,4 +1,9 @@
-use crate::models::algoritm_config::AlgorithmConfig;
+use crate::models::{algoritm_config::AlgorithmConfig, subject::Subject};
+// use create::{chromosome, crossover, fitnes, mutation};
+// use crate::algoritm::chromosome::HorarioBuilder;
+use crate::algoritm::fitnes::FitnessCalc;
+
+use crate::models::algoritm_models::HorarioBuilder;
 use genevo::{operator::prelude::*, prelude::*, random::Rng, types::fmt::Display};
 use rocket::config;
 use std::fmt;
@@ -63,9 +68,9 @@ fn crear_profesores() -> Vec<Profesor> {
         .collect()
 }
 
-fn crear_cursos(profesores: &[Profesor]) -> Vec<Curso> {
+fn crear_cursos(profesores: &[Profesor]) -> Vec<Subject> {
     (0..NUM_CURSOS)
-        .map(|i| Curso {
+        .map(|i| Subject {
             id: i,
             nombre: format!("Curso_{}", i + 1),
             profesor_id: profesores[i % profesores.len()].id,
@@ -85,101 +90,101 @@ fn crear_salones() -> Vec<Salon> {
 // ==============================
 // Función de Fitness
 // ==============================
-fn calcular_colisiones(horario: &HorarioGenome, cursos: &[Curso]) -> usize {
-    let mut colisiones = 0;
-    let mut salon_ocupado = vec![vec![vec![false; NUM_BLOQUES]; NUM_DIAS]; NUM_SALONES];
-    let mut profesor_ocupado = vec![vec![vec![false; NUM_BLOQUES]; NUM_DIAS]; NUM_PROFESORES];
-    println!("HORARIO: {:?}", horario);
-    println!("CURSO: {:?}", cursos);
-    for clase in horario {
-        // Verificar colisiones de salón
-        if salon_ocupado[clase.salon_id][clase.dia][clase.bloque] {
-            colisiones += 1;
-        } else {
-            salon_ocupado[clase.salon_id][clase.dia][clase.bloque] = true;
-        }
+// fn calcular_colisiones(horario: &HorarioGenome, cursos: &[Curso]) -> usize {
+//     let mut colisiones = 0;
+//     let mut salon_ocupado = vec![vec![vec![false; NUM_BLOQUES]; NUM_DIAS]; NUM_SALONES];
+//     let mut profesor_ocupado = vec![vec![vec![false; NUM_BLOQUES]; NUM_DIAS]; NUM_PROFESORES];
+//     println!("HORARIO: {:?}", horario);
+//     println!("CURSO: {:?}", cursos);
+//     for clase in horario {
+//         // Verificar colisiones de salón
+//         if salon_ocupado[clase.salon_id][clase.dia][clase.bloque] {
+//             colisiones += 1;
+//         } else {
+//             salon_ocupado[clase.salon_id][clase.dia][clase.bloque] = true;
+//         }
 
-        // Verificar colisiones de profesor
-        if let Some(curso) = cursos.iter().find(|c| c.id == clase.curso_id) {
-            if profesor_ocupado[curso.profesor_id][clase.dia][clase.bloque] {
-                colisiones += 1;
-            } else {
-                profesor_ocupado[curso.profesor_id][clase.dia][clase.bloque] = true;
-            }
-        }
-    }
-    colisiones
-}
+//         // Verificar colisiones de profesor
+//         if let Some(curso) = cursos.iter().find(|c| c.id == clase.curso_id) {
+//             if profesor_ocupado[curso.profesor_id][clase.dia][clase.bloque] {
+//                 colisiones += 1;
+//             } else {
+//                 profesor_ocupado[curso.profesor_id][clase.dia][clase.bloque] = true;
+//             }
+//         }
+//     }
+//     colisiones
+// }
 
-#[derive(Clone, Debug)]
-struct FitnessCalc {
-    cursos: Vec<Curso>,
-}
+// #[derive(Clone, Debug)]
+// struct FitnessCalc {
+//     cursos: Vec<Curso>,
+// }
 
-impl FitnessFunction<HorarioGenome, usize> for FitnessCalc {
-    fn fitness_of(&self, genome: &HorarioGenome) -> usize {
-        let colisiones = calcular_colisiones(genome, &self.cursos);
-        let max_colisiones = genome.len() * 2; // Máximo posible de colisiones
+// impl FitnessFunction<HorarioGenome, usize> for FitnessCalc {
+//     fn fitness_of(&self, genome: &HorarioGenome) -> usize {
+//         let colisiones = calcular_colisiones(genome, &self.cursos);
+//         let max_colisiones = genome.len() * 2; // Máximo posible de colisiones
 
-        // Fitness más alto = menos colisiones
-        if max_colisiones == 0 {
-            100
-        } else {
-            let score = (max_colisiones - colisiones) * 100 / max_colisiones;
-            score as usize
-        }
-    }
+//         // Fitness más alto = menos colisiones
+//         if max_colisiones == 0 {
+//             100
+//         } else {
+//             let score = (max_colisiones - colisiones) * 100 / max_colisiones;
+//             score as usize
+//         }
+//     }
 
-    fn average(&self, values: &[usize]) -> usize {
-        values.iter().sum::<usize>() / values.len()
-    }
+//     fn average(&self, values: &[usize]) -> usize {
+//         values.iter().sum::<usize>() / values.len()
+//     }
 
-    fn highest_possible_fitness(&self) -> usize {
-        100
-    }
+//     fn highest_possible_fitness(&self) -> usize {
+//         100
+//     }
 
-    fn lowest_possible_fitness(&self) -> usize {
-        0
-    }
-}
+//     fn lowest_possible_fitness(&self) -> usize {
+//         0
+//     }
+// }
 
 // ==============================
 // Operadores Genéticos
 // ==============================
-impl RandomValueMutation for ClaseProgramada {
-    fn random_mutated<R>(value: Self, _min: &Self, _max: &Self, rng: &mut R) -> Self
-    where
-        R: Rng + Sized,
-    {
-        ClaseProgramada {
-            dia: rng.gen_range(0..NUM_DIAS),
-            bloque: rng.gen_range(0..NUM_BLOQUES),
-            salon_id: rng.gen_range(0..NUM_SALONES),
-            ..value
-        }
-    }
-}
+// impl RandomValueMutation for ClaseProgramada {
+//     fn random_mutated<R>(value: Self, _min: &Self, _max: &Self, rng: &mut R) -> Self
+//     where
+//         R: Rng + Sized,
+//     {
+//         ClaseProgramada {
+//             dia: rng.gen_range(0..NUM_DIAS),
+//             bloque: rng.gen_range(0..NUM_BLOQUES),
+//             salon_id: rng.gen_range(0..NUM_SALONES),
+//             ..value
+//         }
+//     }
+// }
 
-struct HorarioBuilder {
-    cursos: Vec<Curso>,
-}
+// struct HorarioBuilder {
+//     cursos: Vec<Curso>,
+// }
 
-impl GenomeBuilder<HorarioGenome> for HorarioBuilder {
-    fn build_genome<R>(&self, _: usize, rng: &mut R) -> HorarioGenome
-    where
-        R: Rng + Sized,
-    {
-        self.cursos
-            .iter()
-            .map(|curso| ClaseProgramada {
-                curso_id: curso.id,
-                salon_id: rng.gen_range(0..NUM_SALONES),
-                dia: rng.gen_range(0..NUM_DIAS),
-                bloque: rng.gen_range(0..NUM_BLOQUES),
-            })
-            .collect()
-    }
-}
+// impl GenomeBuilder<HorarioGenome> for HorarioBuilder {
+//     fn build_genome<R>(&self, _: usize, rng: &mut R) -> HorarioGenome
+//     where
+//         R: Rng + Sized,
+//     {
+//         self.cursos
+//             .iter()
+//             .map(|curso| ClaseProgramada {
+//                 curso_id: curso.id,
+//                 salon_id: rng.gen_range(0..NUM_SALONES),
+//                 dia: rng.gen_range(0..NUM_DIAS),
+//                 bloque: rng.gen_range(0..NUM_BLOQUES),
+//             })
+//             .collect()
+//     }
+// }
 
 // ==============================
 // Visualización
@@ -218,24 +223,25 @@ pub fn execute_process(config: &AlgorithmConfig) -> Result<(), String> {
     };
 
     let horario_builder = HorarioBuilder {
-        cursos: cursos.clone(),
+        subject: cursos.clone(),
+        config: config.clone(),
     };
 
     let initial_population: Population<HorarioGenome> = build_population()
         .with_genome_builder(horario_builder)
-        .of_size(config.population_size)
+        .of_size(config.population)
         .uniform_at_random();
 
     let mut simulacion = simulate(
         genetic_algorithm()
             .with_evaluation(fitness_calc.clone())
             .with_selection(RouletteWheelSelector::new(
-                config.selection_ratio,
-                config.population_size,
+                config.elitism,
+                config.population,
             ))
             .with_crossover(UniformCrossBreeder::new())
             .with_mutation(RandomValueMutator::new(
-                config.mutation_rate,
+                config.mutation,
                 ClaseProgramada {
                     curso_id: 0,
                     salon_id: 0,
@@ -243,23 +249,28 @@ pub fn execute_process(config: &AlgorithmConfig) -> Result<(), String> {
                     bloque: 0,
                 },
                 ClaseProgramada {
-                    curso_id: config.num_cursos - 1,
-                    salon_id: config.num_salones - 1,
-                    dia: config.num_dias - 1,
-                    bloque: config.num_bloques - 1,
+                    // Todos estos datos tienen que llegar de config
+                    // numero de cursos
+                    curso_id: 10,
+                    // numero de salones
+                    salon_id: 10,
+                    // numero de dias
+                    dia: 4,
+                    // numero de bloques
+                    bloque: 30,
                 },
             ))
             .with_reinsertion(ElitistReinserter::new(
                 fitness_calc,
                 false,
-                config.reinsertion_ratio,
+                config.reinsertion,
             ))
             .with_initial_population(initial_population)
             .build(),
     )
     .until(or(
         FitnessLimit::new(100),
-        GenerationLimit::new(config.generation_limit),
+        GenerationLimit::new(config.generations),
     ))
     .build();
 

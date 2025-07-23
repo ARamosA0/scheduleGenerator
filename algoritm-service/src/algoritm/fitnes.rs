@@ -15,10 +15,12 @@ fn calcular_colisiones(
     params: &AlgorithmConfig,
 ) -> usize {
     let mut colisiones = 0;
-    let mut salon_ocupado =
-        vec![vec![vec![false; params.num_bloques]; params.num_dias]; params.num_salones];
-    let mut profesor_ocupado =
-        vec![vec![vec![false; params.num_bloques]; params.num_dias]; params.num_profesores];
+    let mut salon_ocupado = vec![vec![vec![false; 10]; 10]; 10];
+    // let mut salon_ocupado = vec![vec![vec![false; params.num_bloques]; params.num_dias]; params.num_salones];
+
+    let mut profesor_ocupado = vec![vec![vec![false; 10]; 10]; 10];
+    // let mut profesor_ocupado = vec![vec![vec![false; params.num_bloques]; params.num_dias]; params.num_profesores];
+
     for clase in horario {
         // Verificar colisiones de salón
         if salon_ocupado[clase.salon_id][clase.dia][clase.bloque] {

@@ -1,12 +1,12 @@
 services:
-  # algoritm-service:
-  #   build:
-  #     context: ./algoritm-service
-  #   ports:
-  #   - "8088:8088"
-  #   volumes:
-  #     - ./algoritm-service:/app
-  #   command: cargo watch -x run
+  algoritm-service:
+    build:
+      context: ./algoritm-service
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./algoritm-service:/app
+    command: cargo watch -x run
 
   backend:
     build:
@@ -56,3 +56,8 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  dafault:
+    name: backend-network
+    driver: bridge
