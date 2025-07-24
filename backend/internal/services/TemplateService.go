@@ -56,8 +56,8 @@ func CreateTemplate(c echo.Context) error {
 
 func UpdateTemplate(c echo.Context) error {
 	id := c.Param("id")
-	var room model.Template
-	if err := db.DB.First(&room, id).Error; err != nil {
+	var template model.Template
+	if err := db.DB.First(&template, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "Template no encontrado"})
 	}
 
@@ -66,19 +66,15 @@ func UpdateTemplate(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "JSON inválido"})
 	}
 
-	// room.Code = input.Code
-	// room.Name = input.Name
-	// room.Capacity = input.Capacity
-	// room.RoomTypeID = input.RoomTypeID
-	// room.Floor = input.Floor
-	// room.Building = input.Building
-	// room.Observations = input.Observations
+	template.Name = input.Name
+	template.DaysRange = input.DaysRange
 
-	if err := db.DB.Save(&room).Error; err != nil {
+	fmt.Printf("TEMAPLTE UPDATE ---------------------- ", template)
+	if err := db.DB.Save(&template).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "No se pudo actualizar"})
 	}
 
-	return c.JSON(http.StatusCreated, room)
+	return c.JSON(http.StatusCreated, template)
 }
 
 func DeleteTemplate(c echo.Context) error {

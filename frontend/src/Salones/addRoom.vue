@@ -144,8 +144,11 @@ const rooms = ref([
 ]);
 const roomRef = toRef(props, "room");
 watch(roomRef, (newValue: any) => {
-    console.log("entro a room ref");
-    data.value.room = newValue;
+    if (newValue !== null && newValue !== undefined) {
+        data.value.room = newValue;
+    } else {
+        data.value.room = {};
+    }
 });
 
 const closeDialog = () => {

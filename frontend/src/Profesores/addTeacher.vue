@@ -14,7 +14,6 @@ Profesor"
             <div class="flex flex-col gap">
                 <label for="name" class="font-semibold w-24">Nombre</label>
                 <InputText
-                    id="name"
                     v-model="data.teacher.name"
                     class="flex-auto"
                     autocomplete="off"
@@ -23,7 +22,6 @@ Profesor"
             <div class="flex flex-col">
                 <label for="name" class="font-semibold w-24">Apellido</label>
                 <InputText
-                    id="name"
                     v-model="data.teacher.lastName"
                     class="flex-auto"
                     autocomplete="off"
@@ -33,7 +31,6 @@ Profesor"
         <div class="flex flex-col mt-3">
             <label for="name" class="font-semibold w-24">Email</label>
             <InputText
-                id="name"
                 v-model="data.teacher.email"
                 class="flex-auto"
                 autocomplete="off"
@@ -42,7 +39,6 @@ Profesor"
         <div class="flex flex-col mt-3">
             <label for="name" class="font-semibold w-24">Telefono</label>
             <InputText
-                id="name"
                 v-model="data.teacher.phone"
                 class="flex-auto"
                 autocomplete="off"
@@ -51,7 +47,6 @@ Profesor"
         <div class="flex flex-col mt-3">
             <label for="name" class="font-semibold w-24">Especialidad</label>
             <InputText
-                id="name"
                 v-model="data.teacher.specialty"
                 class="flex-auto"
                 autocomplete="off"
@@ -159,7 +154,11 @@ const data = ref({
 });
 const teacherRef = toRef(props, "teacher");
 watch(teacherRef, (newValue: any) => {
-    data.value.teacher = newValue;
+    if (newValue !== null && newValue !== undefined) {
+        data.value.teacher = newValue;
+    } else {
+        data.value.teacher = {};
+    }
 });
 
 const closeDialog = () => {

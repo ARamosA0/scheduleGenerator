@@ -92,7 +92,7 @@
     </Dialog>
 </template>
 <script setup lang="ts">
-import { ref, watch, toRef, onMounted, computed } from "vue";
+import { ref, watch, toRef } from "vue";
 import { Dialog, Button, InputText, Select, Card, DatePicker } from "primevue";
 
 interface TimeRange {
@@ -158,7 +158,7 @@ function addTimeRange() {
         startHour: new Date(2000, 0, 1, 8, 0),
         endHour: new Date(2000, 0, 1, 10, 0),
         period: 0,
-        status: false,
+        status: true,
     });
 }
 

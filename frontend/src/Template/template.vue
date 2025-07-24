@@ -34,7 +34,7 @@
                 severity="secondary"
                 label="Actualizar Template"
                 class="w-full md:w-56 mt-3"
-                @click="open"
+                @click="openUpdate"
             />
         </div>
     </div>
@@ -57,7 +57,11 @@
                         <div class="flex items-center">
                             <i class="pi pi-clock mr-2" />
                             <span class="text-2xl font-bold">{{ d.day }}</span>
-                            <ToggleSwitch class="ml-2" v-model="d.status" />
+                            <ToggleSwitch
+                                class="ml-2"
+                                v-model="d.status"
+                                @change="update"
+                            />
                             <Tag
                                 class="ml-2"
                                 :severity="d.state ? 'contrast' : 'secondary'"
@@ -65,7 +69,6 @@
                                 {{ d.status ? "Activo" : "Inactivo" }}
                             </Tag>
                         </div>
-                        <Button label="Agregar Franja" icon="pi pi-plus" />
                     </div>
                 </template>
                 <template #content>
@@ -102,7 +105,8 @@
     </div>
     <AddTemplate
         v-model:visible="openDialog"
-        :template="selectedTemplate"
+        :template="isCreate ? null : selectedTemplate"
+        :create="isCreate"
         @save="save"
     />
 </template>
@@ -123,14 +127,14 @@ import {
     getAllTemplates,
     createTemplate,
     updateTemplate,
-    deleteTemplate,
 } from "../../api/templateApi";
 
 const router = useRouter();
 const openDialog = ref(false);
 
 const templates = ref([]);
-const selectedTemplate = ref(null);
+const selectedTemplate = ref({});
+const isCreate = ref(true);
 const updateEnabled = ref(false);
 
 onMounted(async () => {
@@ -151,6 +155,11 @@ const open = () => {
     console.log("openDIALGO", openDialog.value);
 };
 
+const openUpdate = () => {
+    openDialog.value = true;
+    isCreate.value = false;
+};
+
 const getTemplates = async () => {
     const allTemplates = await getAllTemplates();
     allTemplates.forEach((template: any) => {
@@ -167,16 +176,23 @@ const parseDaysRange = (jsonString: string) => {
         const raw = JSON.parse(jsonString);
         return raw.map((item: any) => {
             console.log("ITEM", item);
-            const periodos = dividirEnPeriodos(
-                new Date(item.startHour),
-                new Date(item.endHour),
-                item.period,
-            );
+            console.log("HOUR", item.startHour);
+            if (item.periods) {
+            }
+            const periodos = item.periods
+                ? item.periods
+                : dividirEnPeriodos(
+                      new Date(item.startHour),
+                      new Date(item.endHour),
+                      item.period,
+                  );
 
             return {
                 day: item.day,
                 periods: periodos,
                 status: item.status,
+                startHour: item.startHour,
+                endHour: item.endHour,
             };
         });
     } catch (e) {
@@ -193,6 +209,8 @@ const dividirEnPeriodos = (
     const result = [];
     let currentStart = startHour;
     let index = 1;
+    console.log("CURRENTSTART", currentStart);
+    console.log("ENDHOUR", endHour);
     while (currentStart < endHour) {
         const currentEnd = new Date(
             currentStart.getTime() + period * 60 * 1000,
@@ -214,5 +232,17 @@ const dividirEnPeriodos = (
 const save = async (value: any) => {
     console.log("VALUE TEMPLATE", value);
     await createTemplate(value);
+    await getTemplates();
+};
+
+const update = async () => {
+    console.log("UPDATE TEMPLATE", selectedTemplate.value);
+    const updatedValuesJson = JSON.stringify(
+        selectedTemplate.value.daysRangeParsed,
+    );
+    console.log("JSON UPDATE", updatedValuesJson);
+    selectedTemplate.value.daysRange = updatedValuesJson;
+    await updateTemplate(selectedTemplate.value);
+    console.log("SELECTED TEMPLATE", selectedTemplate.value);
 };
 </script>

@@ -146,7 +146,11 @@ const data = ref({
 });
 const courseRef = toRef(props, "course");
 watch(courseRef, (newValue: any) => {
-    data.value.course = newValue;
+    if (newValue !== null && newValue !== undefined) {
+        data.value.course = newValue;
+    } else {
+        data.value.course = {};
+    }
 });
 
 const rooms = ref([

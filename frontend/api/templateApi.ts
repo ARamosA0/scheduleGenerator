@@ -31,9 +31,11 @@ export const createTemplate = async (template: any) => {
   return api.post("/template", template);
 };
 
-export const updateTemplate = async (subject: any) => {
-  console.log("ID", subject);
-  return api.put(`/template/${subject.ID}`, subject);
+export const updateTemplate = async (template: any) => {
+  console.log("ID PRE", template);
+  // delete template.daysRangeParsed;
+  // console.log("ID POST", template);
+  return api.put(`/template/${template.ID}`, template);
 };
 export const deleteTemplate = async (subject: any) => {
   console.log("DELETE ID", subject);

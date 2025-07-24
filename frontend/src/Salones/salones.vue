@@ -28,6 +28,9 @@
                 paginator
                 :rows="5"
                 :rowsPerPageOptions="[5, 10, 20, 50]"
+                v-model:selection="selectedData"
+                selectionMode="single"
+                :metakeySelection="false"
                 tableStyle="min-width:50rem"
                 @rowSelect="onRowSelect"
             >

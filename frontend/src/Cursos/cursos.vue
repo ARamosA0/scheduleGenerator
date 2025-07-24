@@ -57,7 +57,7 @@
         v-model:visible="openDialog"
         @save="saveCourse"
         @update="update"
-        :courses="data"
+        :course="selectedData"
     />
 </template>
 
