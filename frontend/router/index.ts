@@ -15,6 +15,7 @@ const routes = [
   { path: "/template", name: "template", component: Template },
   { path: "/generate", name: "generar", component: GenerateSchedule },
   { path: "/historial", name: "historial", component: Historial },
+  { path: "/calendario", name: "calendario" },
 ];
 
 const router = createRouter({
