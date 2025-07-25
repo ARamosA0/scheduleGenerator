@@ -6,18 +6,18 @@
             severity="secondary"
             @click="router.push({ name: 'home' })"
         ></Button>
-        <div class="col-span-11">
+        <div class="col-span-7">
             <p class="text-2xl font-bold">Horario Semestre 2024-1</p>
             <p class="text-lg">Horario generado del 2024-01-15</p>
         </div>
-        <div class="flex flex-row">
-            <Button label="Exportar" />
-            <Button label="Imprimir" />
-            <Button label="Regenerar" />
+        <div class="flex flex-row col-span-4">
+            <Button label="Exportar" class="ml-3" />
+            <Button label="Imprimir" class="ml-3" />
+            <Button label="Regenerar" class="ml-3" />
         </div>
     </div>
 
-    <div>
+    <div class="grid grid-cols-4 gap-3">
         <Card>
             <template #content>
                 <i class="pi pi-calendar" />
@@ -56,57 +56,48 @@
         </Card>
     </div>
 
+    <div>
+        <Select
+            v-model="data.displayPeriodUom"
+            :options="periodsOptions"
+            optionLabel="name"
+            optionValue="value"
+        />
+    </div>
+
     <Card>
         <template #title>
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-xl">Lista de Profesores</p>
-                    <p class="text-base">Gestiona los profesores del sistema</p>
+                    <p class="text-xl">Horario Semanal</p>
+                    <p class="text-base">
+                        Distribucion de clases por dia y hora
+                    </p>
                 </div>
-                <Button label="Agregar profesor" />
             </div>
         </template>
         <template #content>
-            <DataTable
-                :value="data"
-                paginator
-                :rows="5"
-                :rowsPerPageOptions="[5, 10, 20, 50]"
-                tableStyle="min-width:50rem"
-            >
-                <Column field="codigo" header="Nombre" />
-                <Column field="nombre" header="Email" />
-                <Column field="creditos" header="Especialidad" />
-                <Column field="horas" header="Disponibilidad" />
-                <Column field="acciones" header="Acciones">
-                    <template #body severity="secondary" rounded>
-                        <Button icon="pi pi-trash"></Button>
-                    </template>
-                </Column>
-            </DataTable>
+            <CalendarView :displayPeriodUom="data.displayPeriodUom" />
         </template>
     </Card>
 </template>
 
-<script setup lang="ts">
+<script setup lang="js">
 import { ref } from "vue";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import Card from "primevue/card";
-import Button from "primevue/button";
+import { DataTable, Column, Card, Button, Select } from "primevue";
+
+import CalendarView from "../common/calendarView.vue";
 
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-const data = ref([
-    {
-        codigo: "CS101",
-        nombre: "Introducción a la Computación",
-        creditos: 3,
-        horas: 4,
-        semestre: "I",
-        carrera: "Ingeniería de Software",
-        acciones: "Editar",
-    },
+const data = ref({
+    displayPeriodUom: "month",
+});
+
+const periodsOptions = ref([
+    { name: "Vista Semanal", value: "week" },
+    { name: "Vista Mensual", value: "month" },
+    { name: "Vista Anual", value: "year" },
 ]);
 </script>

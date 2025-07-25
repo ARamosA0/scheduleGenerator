@@ -6,6 +6,7 @@ import Salones from "../src/Salones/salones.vue";
 import Template from "../src/Template/template.vue";
 import Historial from "../src/Historial/historial.vue";
 import GenerateSchedule from "../src/Generate/generateSchedule.vue";
+import Schedulle from "../src/Schedulle/schedule.vue";
 
 const routes = [
   { path: "/", name: "home", component: Home },
@@ -15,6 +16,7 @@ const routes = [
   { path: "/template", name: "template", component: Template },
   { path: "/generate", name: "generar", component: GenerateSchedule },
   { path: "/historial", name: "historial", component: Historial },
+  { path: "/calendario", name: "calendario", component: Schedulle },
 ];
 
 const router = createRouter({
