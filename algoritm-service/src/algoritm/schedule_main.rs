@@ -1,4 +1,7 @@
-use crate::models::{algoritm_config::AlgorithmConfig, subject::Subject};
+use crate::models::algoritm_models::ClaseProgramada;
+use crate::models::{
+    algoritm_config::AlgorithmConfig, room::Room, subject::Subject, teacher::Teacher,
+};
 // use create::{chromosome, crossover, fitnes, mutation};
 // use crate::algoritm::chromosome::HorarioBuilder;
 use crate::algoritm::fitnes::FitnessCalc;
@@ -45,13 +48,13 @@ struct Salon {
 }
 
 // Representación de una clase programada
-#[derive(Clone, Debug, PartialEq, PartialOrd)]
-struct ClaseProgramada {
-    curso_id: usize,
-    salon_id: usize,
-    dia: usize,    // 0-4 (Lunes-Viernes)
-    bloque: usize, // 0-3 (Bloques horarios)
-}
+// #[derive(Clone, Debug, PartialEq, PartialOrd)]
+// struct ClaseProgramada {
+//     curso_id: usize,
+//     salon_id: usize,
+//     dia: usize,    // 0-4 (Lunes-Viernes)
+//     bloque: usize, // 0-3 (Bloques horarios)
+// }
 
 // Genotipo: Vector de clases programadas
 type HorarioGenome = Vec<ClaseProgramada>;
@@ -59,30 +62,47 @@ type HorarioGenome = Vec<ClaseProgramada>;
 // ==============================
 // Datos de ejemplo
 // ==============================
-fn crear_profesores() -> Vec<Profesor> {
+fn crear_profesores() -> Vec<Teacher> {
     (0..NUM_PROFESORES)
-        .map(|i| Profesor {
+        .map(|i| Teacher {
             id: i,
-            nombre: format!("Profesor_{}", (b'A' + i as u8) as char),
+            name: format!("Profesor_{}", (b'A' + i as u8) as char),
+            last_name: String::from("lastName"),
+            email: String::from("email@email.com"),
+            phone: String::from("123123123"),
+            speciality: String::from("speciality"),
+            available_days: vec!["lunes".to_string(), "martes".to_string()],
         })
         .collect()
 }
 
-fn crear_cursos(profesores: &[Profesor]) -> Vec<Subject> {
+fn crear_cursos(teacher: &[Teacher]) -> Vec<Subject> {
     (0..NUM_CURSOS)
         .map(|i| Subject {
             id: i,
-            nombre: format!("Curso_{}", i + 1),
-            profesor_id: profesores[i % profesores.len()].id,
+            name: format!("Curso_{}", i + 1),
+            credits: 1,
+            hours: 1, // profesor_id: profesores[i % profesores.len()].id,
+            semester: 1,
+            career: String::from("career"),
+            requirementes: String::from("requirements"),
+            description: String::from("description"),
+            requiredRoomType: 1,
         })
         .collect()
 }
 
-fn crear_salones() -> Vec<Salon> {
+fn crear_salones() -> Vec<Room> {
     (0..NUM_SALONES)
-        .map(|i| Salon {
+        .map(|i| Room {
             id: i,
-            nombre: format!("Salon_{}", (b'A' + i as u8) as char),
+            code: format!("Salon_{}", (b'A' + i as u8) as char),
+            name: format!("Salon_{}", (b'A' + i as u8) as char),
+            capacity: 1,
+            room_type: 1,
+            floor: 1,
+            building: String::from("building"),
+            observations: String::from("building"),
         })
         .collect()
 }
@@ -214,16 +234,17 @@ fn crear_salones() -> Vec<Salon> {
 // ==============================
 
 pub fn execute_process(config: &AlgorithmConfig) -> Result<(), String> {
-    let profesores = crear_profesores();
-    let cursos = crear_cursos(&profesores);
-    let _salones = crear_salones();
+    let teachers = crear_profesores();
+    let subjects = crear_cursos(&teachers);
+    let rooms = crear_salones();
 
     let fitness_calc = FitnessCalc {
-        cursos: cursos.clone(),
+        subject: subjects.clone(),
+        param: config.clone(),
     };
 
     let horario_builder = HorarioBuilder {
-        subject: cursos.clone(),
+        subject: subjects.clone(),
         config: config.clone(),
     };
 

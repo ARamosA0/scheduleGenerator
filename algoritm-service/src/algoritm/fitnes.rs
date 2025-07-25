@@ -42,9 +42,9 @@ fn calcular_colisiones(
 }
 
 #[derive(Clone, Debug)]
-struct FitnessCalc {
-    subject: Vec<Subject>,
-    param: AlgorithmConfig,
+pub struct FitnessCalc {
+    pub subject: Vec<Subject>,
+    pub param: AlgorithmConfig,
 }
 
 impl FitnessFunction<HorarioGenome, usize> for FitnessCalc {
