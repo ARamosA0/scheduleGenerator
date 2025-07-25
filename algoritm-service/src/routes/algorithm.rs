@@ -20,24 +20,8 @@ pub async fn run_schedule() {
 #[post("/generar", format = "json", data = "<config>")]
 pub async fn generar_horario(config: Json<AlgorithmConfig>) -> String {
     let mut config = config.into_inner();
-
-    config.generation_limit = 100;
-    config.mutation_rate = 0.01;
-    config.num_bloques = 1;
-    config.num_dias = 6;
-    config.num_profesores = 10;
-    config.num_salones = 3;
-    config.population_size = 1000;
-    config.reinsertion_ratio = 10.4;
-    config.selection_ratio = 3.0;
+    println!("Config recibida:\n{:#?}", config);
 
     execute_process(&config);
-    // match execute_process(&config) {
-    //     Ok(_) => "Algoritmo ejecutado con éxito".into(),
-    //     Err(e) => {
-    //         eprintln!("Error al ejecutar el algoritmo: {}", e);
-    //         format!("Error: {}", e)
-    //     }
-    // }
     "Algoritmo ejecutado con éxito".into()
 }

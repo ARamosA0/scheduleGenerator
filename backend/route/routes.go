@@ -13,4 +13,6 @@ func RegisterRoutes(e *echo.Echo) {
 	request.RegisterGroupRoutes(api)
 	request.RegisterRuleRoutes(api)
 	request.RegisterSubjectRoutes(api)
+	request.RegisterTemplatesRoutes(api)
+	request.RegisterAssigmentsRoutes(api)
 }

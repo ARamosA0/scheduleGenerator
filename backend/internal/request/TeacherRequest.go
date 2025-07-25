@@ -9,7 +9,6 @@ func RegisterTeacherRoutes(g *echo.Group) {
 	teacher := g.Group("/teachers")
 	teacher.GET("", services.GetAllTeachers)
 	teacher.POST("", services.CreateTeacher)
-	// teacher.GET("/:id", GetTeacherByID)
-	// teacher.PUT("/:id", UpdateTeacher)
-	// teacher.DELETE("/:id", DeleteTeacher)
+	teacher.PUT("/:id", services.UpdateTeacher)
+	teacher.DELETE("/:id", services.DeleteTeacher)
 }
