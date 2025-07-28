@@ -1,8 +1,5 @@
-use crate::models::{algoritm_config::AlgorithmConfig, algoritm_models::*, subject::Subject};
+use crate::models::algoritm_models::*;
 use genevo::{operator::prelude::*, prelude::*, random::Rng, types::fmt::Display};
-use rocket::serde::json::Json;
-use serde::Serialize;
-use std::fmt;
 
 type HorarioGenome = Vec<ClaseProgramada>;
 
