@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+use crate::models::{room::Room, subject::Subject, teacher::Teacher};
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AlgorithmConfig {
     pub num_subjects: usize,
@@ -14,12 +16,12 @@ pub struct AlgorithmConfig {
     pub mutation: f64,
     pub cross_over: f64,
     pub reinsertion: f64,
-    pub elitism: f64,
+    pub selection: f64,
 
     pub template: Vec<DaySchedule>,
-    pub subjects: Value,
-    pub teachers: Value,
-    pub rooms: Value,
+    pub subjects: Vec<Subject>,
+    pub teachers: Vec<Teacher>,
+    pub rooms: Vec<Room>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

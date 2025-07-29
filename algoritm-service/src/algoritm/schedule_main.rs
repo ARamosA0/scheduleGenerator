@@ -85,9 +85,9 @@ fn crear_cursos(teacher: &[Teacher]) -> Vec<Subject> {
             hours: 1, // profesor_id: profesores[i % profesores.len()].id,
             semester: 1,
             career: String::from("career"),
-            requirementes: String::from("requirements"),
+            requirements: String::from("requirements"),
             description: String::from("description"),
-            requiredRoomType: 1,
+            required_room_type: 1,
         })
         .collect()
 }
@@ -234,18 +234,16 @@ fn crear_salones() -> Vec<Room> {
 // ==============================
 
 pub fn execute_process(config: &AlgorithmConfig) -> Result<(), String> {
-    let teachers = crear_profesores();
-    let subjects = crear_cursos(&teachers);
-    let rooms = crear_salones();
+    let subjects = &config.subjects;
 
     let fitness_calc = FitnessCalc {
         subject: subjects.clone(),
-        param: config.clone(),
+        param: &config,
     };
 
     let horario_builder = HorarioBuilder {
         subject: subjects.clone(),
-        config: config.clone(),
+        config: &config,
     };
 
     let initial_population: Population<HorarioGenome> = build_population()
@@ -257,7 +255,7 @@ pub fn execute_process(config: &AlgorithmConfig) -> Result<(), String> {
         genetic_algorithm()
             .with_evaluation(fitness_calc.clone())
             .with_selection(RouletteWheelSelector::new(
-                config.elitism,
+                config.selection,
                 config.population,
             ))
             .with_crossover(UniformCrossBreeder::new())
@@ -270,15 +268,10 @@ pub fn execute_process(config: &AlgorithmConfig) -> Result<(), String> {
                     bloque: 0,
                 },
                 ClaseProgramada {
-                    // Todos estos datos tienen que llegar de config
-                    // numero de cursos
-                    curso_id: 10,
-                    // numero de salones
-                    salon_id: 10,
-                    // numero de dias
-                    dia: 4,
-                    // numero de bloques
-                    bloque: 30,
+                    curso_id: config.num_subjects,
+                    salon_id: config.num_rooms,
+                    dia: config.num_days,
+                    bloque: config.num_periods,
                 },
             ))
             .with_reinsertion(ElitistReinserter::new(

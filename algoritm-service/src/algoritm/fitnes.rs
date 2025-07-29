@@ -10,18 +10,21 @@ use crate::models::{
 // ==============================
 type HorarioGenome = Vec<ClaseProgramada>;
 fn calcular_colisiones(
-    horario: &HorarioGenome,
+    genoma: &HorarioGenome,
     subjects: &[Subject],
     params: &AlgorithmConfig,
 ) -> usize {
     let mut colisiones = 0;
-    let mut salon_ocupado = vec![vec![vec![false; 10]; 10]; 10];
-    // let mut salon_ocupado = vec![vec![vec![false; params.num_bloques]; params.num_dias]; params.num_salones];
+    let mut salon_ocupado =
+        vec![vec![vec![false; params.num_periods]; params.num_days]; params.num_rooms];
 
-    let mut profesor_ocupado = vec![vec![vec![false; 10]; 10]; 10];
-    // let mut profesor_ocupado = vec![vec![vec![false; params.num_bloques]; params.num_dias]; params.num_profesores];
-
-    for clase in horario {
+    let mut profesor_ocupado =
+        vec![vec![vec![false; params.num_periods]; params.num_days]; params.num_teachers];
+    for (i, clase) in genoma.iter().enumerate() {
+        println!(
+            "Clase #{i}: curso_id={}, salon_id={}, dia={}, bloque={}",
+            clase.curso_id, clase.salon_id, clase.dia, clase.bloque
+        );
         // Verificar colisiones de salón
         if salon_ocupado[clase.salon_id][clase.dia][clase.bloque] {
             colisiones += 1;
@@ -42,14 +45,22 @@ fn calcular_colisiones(
 }
 
 #[derive(Clone, Debug)]
-pub struct FitnessCalc {
+pub struct FitnessCalc<'a> {
     pub subject: Vec<Subject>,
-    pub param: AlgorithmConfig,
+    pub param: &'a AlgorithmConfig,
 }
+// pub struct FitnessCalc {
+//     pub subject: Vec<Subject>,
+//     pub param: AlgorithmConfig,
+// }
 
-impl FitnessFunction<HorarioGenome, usize> for FitnessCalc {
+impl<'a> FitnessFunction<HorarioGenome, usize> for FitnessCalc<'a> {
     fn fitness_of(&self, genome: &HorarioGenome) -> usize {
         let colisiones = calcular_colisiones(genome, &self.subject, &self.param);
+        // println!(
+        //     "GENOME:{:?} \nSUBJECT:{:?} \nPARAM:{:?}",
+        //     genome, &self.subject, &self.param
+        // );
         let max_colisiones = genome.len() * colisiones; // Máximo posible de colisiones
 
         // Fitness más alto = menos colisiones

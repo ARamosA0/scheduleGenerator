@@ -1,16 +1,22 @@
-use crate::models::algoritm_config::{AlgorithmConfig, DaySchedule, RawData};
+use crate::models::{
+    algoritm_config::{AlgorithmConfig, DaySchedule, RawData},
+    room::Room,
+    subject::Subject,
+    teacher::Teacher,
+};
 use serde_json::Value;
 
 pub fn format_json(data: RawData) -> AlgorithmConfig {
     let formated_days_range = format_days_range(&data.template);
-    println!("FORMATED DAYS: {:?}", formated_days_range);
+    let formated_techers = format_teachers(&data.teachers);
+    let formated_subjects = format_subjects(&data.subjects);
+    let formated_rooms = format_rooms(&data.rooms);
+
     let num_subjects = arrays_data_counter(&data.subjects);
     let num_rooms = arrays_data_counter(&data.rooms);
     let num_teachers = arrays_data_counter(&data.teachers);
     let num_days = count_days(&formated_days_range);
     let num_periods = periods_definition(&formated_days_range);
-
-    println!("NUM_DAYS:\n{:#?}", num_days);
 
     AlgorithmConfig {
         num_subjects,
@@ -24,12 +30,12 @@ pub fn format_json(data: RawData) -> AlgorithmConfig {
         mutation: data.mutation,
         cross_over: data.cross_over,
         reinsertion: data.reinsertion,
-        elitism: data.selection,
+        selection: data.selection,
 
         template: formated_days_range,
-        subjects: data.subjects,
-        teachers: data.teachers,
-        rooms: data.rooms,
+        subjects: formated_subjects,
+        teachers: formated_techers,
+        rooms: formated_rooms,
     }
 }
 
@@ -63,6 +69,34 @@ pub fn format_days_range(data: &Value) -> Vec<DaySchedule> {
         }
     } else {
         Vec::new()
+    }
+}
+
+pub fn format_subjects(data: &Value) -> Vec<Subject> {
+    match serde_json::from_value::<Vec<Subject>>(data.clone()) {
+        Ok(subjects) => subjects,
+        Err(e) => {
+            eprintln!("Error al deserializar subjects: {}", e);
+            vec![]
+        }
+    }
+}
+pub fn format_teachers(data: &Value) -> Vec<Teacher> {
+    match serde_json::from_value::<Vec<Teacher>>(data.clone()) {
+        Ok(teacher) => teacher,
+        Err(e) => {
+            eprintln!("Error al deserializar teachers: {}", e);
+            vec![]
+        }
+    }
+}
+pub fn format_rooms(data: &Value) -> Vec<Room> {
+    match serde_json::from_value::<Vec<Room>>(data.clone()) {
+        Ok(room) => room,
+        Err(e) => {
+            eprintln!("Error al deserializar rooms: {}", e);
+            vec![]
+        }
     }
 }
 
