@@ -17,7 +17,7 @@
         </CalendarView>
     </div>
 </template>
-<script setup lang="ts">
+<script setup lang="js">
 import { ref } from "vue";
 import { CalendarView, CalendarViewHeader } from "vue-simple-calendar";
 
@@ -31,7 +31,7 @@ const props = defineProps({
     },
 });
 
-const thisMonth = (d: number, h?: number, m?: number) => {
+const thisMonth = (d, h, m) => {
     const t = new Date();
     return new Date(t.getFullYear(), t.getMonth(), d, h ?? 0, m ?? 0);
 };
@@ -112,7 +112,7 @@ const data = ref({
     ],
 });
 
-const setShowDate = (d: Date) => {
+const setShowDate = (d) => {
     showDate.value = d;
 };
 </script>

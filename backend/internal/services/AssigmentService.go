@@ -80,6 +80,11 @@ func CreateAssigment(c echo.Context) error {
 		Selection:   process.ProcessData.Selection,
 		Reinsertion: process.ProcessData.Reinsertion,
 	}
+
+	if err := db.DB.Create(&data).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error al guardar el proceso"})
+	}
+
 	// API DE RUST
 	jsonData, err := json.Marshal(data)
 	if err != nil {
@@ -94,11 +99,14 @@ func CreateAssigment(c echo.Context) error {
 			fmt.Println("RESPUESTA DE RUST:", string(body))
 		}
 	}
-	fmt.Printf("Assigment %+v\n", data)
+	// schedule := model.Schedule{
+	// 	Assignment_id: data.ID,
+	// 	StartDate: jsonData.,
+	// }
 
-	if err := db.DB.Create(&data).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error al guardar el curso"})
-	}
+	// if err := db.DB.Create().Error; err != nil {
+
+	// }
 
 	return c.JSON(http.StatusCreated, data)
 }

@@ -7,233 +7,48 @@ use crate::models::{
 use crate::algoritm::fitnes::FitnessCalc;
 
 use crate::models::algoritm_models::HorarioBuilder;
+use crate::models::schedule_model::ScheduleResponse;
+use chrono::Utc;
 use genevo::{operator::prelude::*, prelude::*, random::Rng, types::fmt::Display};
 use rocket::config;
 use std::fmt;
-
-// ==============================
-// Configuración del problema
-// ==============================
-const NUM_PROFESORES: usize = 4;
-const NUM_CURSOS: usize = 8;
-const NUM_SALONES: usize = 5;
-const NUM_DIAS: usize = 5; // Lunes a Viernes
-const NUM_BLOQUES: usize = 4; // Bloques horarios por día
-const POPULATION_SIZE: usize = 200;
-const GENERATION_LIMIT: u64 = 1000;
-const SELECTION_RATIO: f64 = 0.7;
-const MUTATION_RATE: f64 = 0.05;
-const REINSERTION_RATIO: f64 = 0.7;
-
-// ==============================
-// Estructuras de datos
-// ==============================
-#[derive(Clone, Debug, PartialEq)]
-struct Profesor {
-    id: usize,
-    nombre: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-struct Curso {
-    id: usize,
-    nombre: String,
-    profesor_id: usize,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-struct Salon {
-    id: usize,
-    nombre: String,
-}
-
-// Representación de una clase programada
-// #[derive(Clone, Debug, PartialEq, PartialOrd)]
-// struct ClaseProgramada {
-//     curso_id: usize,
-//     salon_id: usize,
-//     dia: usize,    // 0-4 (Lunes-Viernes)
-//     bloque: usize, // 0-3 (Bloques horarios)
-// }
+use std::vec::Vec;
 
 // Genotipo: Vector de clases programadas
 type HorarioGenome = Vec<ClaseProgramada>;
-
-// ==============================
-// Datos de ejemplo
-// ==============================
-fn crear_profesores() -> Vec<Teacher> {
-    (0..NUM_PROFESORES)
-        .map(|i| Teacher {
-            id: i,
-            name: format!("Profesor_{}", (b'A' + i as u8) as char),
-            last_name: String::from("lastName"),
-            email: String::from("email@email.com"),
-            phone: String::from("123123123"),
-            speciality: String::from("speciality"),
-            available_days: vec!["lunes".to_string(), "martes".to_string()],
-        })
-        .collect()
-}
-
-fn crear_cursos(teacher: &[Teacher]) -> Vec<Subject> {
-    (0..NUM_CURSOS)
-        .map(|i| Subject {
-            id: i,
-            name: format!("Curso_{}", i + 1),
-            credits: 1,
-            hours: 1, // profesor_id: profesores[i % profesores.len()].id,
-            semester: 1,
-            career: String::from("career"),
-            requirements: String::from("requirements"),
-            description: String::from("description"),
-            required_room_type: 1,
-        })
-        .collect()
-}
-
-fn crear_salones() -> Vec<Room> {
-    (0..NUM_SALONES)
-        .map(|i| Room {
-            id: i,
-            code: format!("Salon_{}", (b'A' + i as u8) as char),
-            name: format!("Salon_{}", (b'A' + i as u8) as char),
-            capacity: 1,
-            room_type: 1,
-            floor: 1,
-            building: String::from("building"),
-            observations: String::from("building"),
-        })
-        .collect()
-}
-
-// ==============================
-// Función de Fitness
-// ==============================
-// fn calcular_colisiones(horario: &HorarioGenome, cursos: &[Curso]) -> usize {
-//     let mut colisiones = 0;
-//     let mut salon_ocupado = vec![vec![vec![false; NUM_BLOQUES]; NUM_DIAS]; NUM_SALONES];
-//     let mut profesor_ocupado = vec![vec![vec![false; NUM_BLOQUES]; NUM_DIAS]; NUM_PROFESORES];
-//     println!("HORARIO: {:?}", horario);
-//     println!("CURSO: {:?}", cursos);
-//     for clase in horario {
-//         // Verificar colisiones de salón
-//         if salon_ocupado[clase.salon_id][clase.dia][clase.bloque] {
-//             colisiones += 1;
-//         } else {
-//             salon_ocupado[clase.salon_id][clase.dia][clase.bloque] = true;
-//         }
-
-//         // Verificar colisiones de profesor
-//         if let Some(curso) = cursos.iter().find(|c| c.id == clase.curso_id) {
-//             if profesor_ocupado[curso.profesor_id][clase.dia][clase.bloque] {
-//                 colisiones += 1;
-//             } else {
-//                 profesor_ocupado[curso.profesor_id][clase.dia][clase.bloque] = true;
-//             }
-//         }
-//     }
-//     colisiones
-// }
-
-// #[derive(Clone, Debug)]
-// struct FitnessCalc {
-//     cursos: Vec<Curso>,
-// }
-
-// impl FitnessFunction<HorarioGenome, usize> for FitnessCalc {
-//     fn fitness_of(&self, genome: &HorarioGenome) -> usize {
-//         let colisiones = calcular_colisiones(genome, &self.cursos);
-//         let max_colisiones = genome.len() * 2; // Máximo posible de colisiones
-
-//         // Fitness más alto = menos colisiones
-//         if max_colisiones == 0 {
-//             100
-//         } else {
-//             let score = (max_colisiones - colisiones) * 100 / max_colisiones;
-//             score as usize
-//         }
-//     }
-
-//     fn average(&self, values: &[usize]) -> usize {
-//         values.iter().sum::<usize>() / values.len()
-//     }
-
-//     fn highest_possible_fitness(&self) -> usize {
-//         100
-//     }
-
-//     fn lowest_possible_fitness(&self) -> usize {
-//         0
-//     }
-// }
-
-// ==============================
-// Operadores Genéticos
-// ==============================
-// impl RandomValueMutation for ClaseProgramada {
-//     fn random_mutated<R>(value: Self, _min: &Self, _max: &Self, rng: &mut R) -> Self
-//     where
-//         R: Rng + Sized,
-//     {
-//         ClaseProgramada {
-//             dia: rng.gen_range(0..NUM_DIAS),
-//             bloque: rng.gen_range(0..NUM_BLOQUES),
-//             salon_id: rng.gen_range(0..NUM_SALONES),
-//             ..value
-//         }
-//     }
-// }
-
-// struct HorarioBuilder {
-//     cursos: Vec<Curso>,
-// }
-
-// impl GenomeBuilder<HorarioGenome> for HorarioBuilder {
-//     fn build_genome<R>(&self, _: usize, rng: &mut R) -> HorarioGenome
-//     where
-//         R: Rng + Sized,
-//     {
-//         self.cursos
-//             .iter()
-//             .map(|curso| ClaseProgramada {
-//                 curso_id: curso.id,
-//                 salon_id: rng.gen_range(0..NUM_SALONES),
-//                 dia: rng.gen_range(0..NUM_DIAS),
-//                 bloque: rng.gen_range(0..NUM_BLOQUES),
-//             })
-//             .collect()
-//     }
-// }
-
+pub struct HorarioGenomeDisplay(pub Vec<ClaseProgramada>);
 // ==============================
 // Visualización
 // ==============================
-// impl Display for HorarioGenome {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         let mut output = String::new();
-//         let dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
-//         let bloques = ["8-10", "10-12", "12-14", "14-16"];
+impl Display for HorarioGenomeDisplay {
+    fn fmt(&self) -> String {
+        let dias = [
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado",
+        ];
+        let bloques = ["8-10", "10-12", "12-14", "14-16"];
 
-//         for clase in self {
-//             output += &format!(
-//                 "Curso {}: {} - Salon {}, {} - {}\n",
-//                 clase.curso_id,
-//                 dias[clase.dia],
-//                 (b'A' + clase.salon_id as u8) as char,
-//                 bloques[clase.bloque],
-//                 dias[clase.dia]
-//             );
-//         }
-//         write!(f, "{}", output)
-//     }
-// }
+        let mut output = String::new();
 
-// ==============================
-// Función principal
-// ==============================
+        for clase in &self.0 {
+            output += &format!(
+                "Curso {}: {} - Salón {}, Bloque {}\n",
+                clase.curso_id,
+                dias[clase.dia],
+                (b'A' + clase.salon_id as u8) as char,
+                bloques[clase.bloque]
+            );
+        }
 
-pub fn execute_process(config: &AlgorithmConfig) -> Result<(), String> {
+        output
+    }
+}
+
+pub fn execute_process(config: &AlgorithmConfig) -> Vec<ScheduleResponse> {
     let subjects = &config.subjects;
 
     let fitness_calc = FitnessCalc {
@@ -305,7 +120,9 @@ pub fn execute_process(config: &AlgorithmConfig) -> Result<(), String> {
                 println!("{}", stop_reason);
                 println!("Generación: {}", step.iteration);
                 println!("Mejor fitness: {}", best.solution.fitness);
-                // println!("\nMEJOR HORARIO ENCONTRADO:\n{}", best.solution.genome);
+                // println!("\nMEJOR HORARIO ENCONTRADO:\n{:?}", best.solution.genome);
+                let best_genome = best.solution.genome;
+                return format_schedule_response(best_genome, &config);
                 break;
             }
             Err(error) => {
@@ -314,8 +131,43 @@ pub fn execute_process(config: &AlgorithmConfig) -> Result<(), String> {
             }
         }
     }
+    vec![]
+}
 
-    Ok(())
+pub fn format_schedule_response(
+    best_genome: Vec<ClaseProgramada>,
+    config: &AlgorithmConfig,
+) -> Vec<ScheduleResponse> {
+    println!("BEST GENOME:{:?}", best_genome);
+    println!("CONFIG:{:?}", config);
+    let mut response = vec![];
+
+    for chromosome in best_genome {
+        let subject_name = config
+            .subjects
+            .iter()
+            .find(|s| s.id == chromosome.curso_id)
+            .map(|s| s.name.clone())
+            .unwrap_or_else(|| "Desconocido".to_string());
+
+        let room_name = config
+            .rooms
+            .iter()
+            .find(|r| r.id == chromosome.salon_id)
+            .map(|s| s.name.clone())
+            .unwrap_or_else(|| "Desconocido".to_string());
+
+        // let day = config
+
+        response.push(ScheduleResponse {
+            id: chromosome.curso_id,
+            startedDate: Utc::now().date_naive(),
+            endDate: Utc::now().date_naive(),
+            title: subject_name,
+            tooltip: room_name,
+        });
+    }
+    response
 }
 
 pub fn ejecutar_algoritmo_horario() {}

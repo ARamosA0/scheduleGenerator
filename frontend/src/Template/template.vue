@@ -230,6 +230,11 @@ const dividirEnPeriodos = (
 };
 
 const save = async (value: any) => {
+    console.log("VALUE SAVE", value);
+    const periodos = parseDaysRange(value.daysRange);
+    value.daysRangeParsed = periodos;
+    const updatedValuesJson = JSON.stringify(value.daysRangeParsed);
+    value.daysRange = updatedValuesJson;
     console.log("VALUE TEMPLATE", value);
     await createTemplate(value);
     await getTemplates();

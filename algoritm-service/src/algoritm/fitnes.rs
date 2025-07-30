@@ -21,10 +21,10 @@ fn calcular_colisiones(
     let mut profesor_ocupado =
         vec![vec![vec![false; params.num_periods]; params.num_days]; params.num_teachers];
     for (i, clase) in genoma.iter().enumerate() {
-        println!(
-            "Clase #{i}: curso_id={}, salon_id={}, dia={}, bloque={}",
-            clase.curso_id, clase.salon_id, clase.dia, clase.bloque
-        );
+        // println!(
+        //     "Clase #{i}: curso_id={}, salon_id={}, dia={}, bloque={}",
+        //     clase.curso_id, clase.salon_id, clase.dia, clase.bloque
+        // );
         // Verificar colisiones de salón
         if salon_ocupado[clase.salon_id][clase.dia][clase.bloque] {
             colisiones += 1;

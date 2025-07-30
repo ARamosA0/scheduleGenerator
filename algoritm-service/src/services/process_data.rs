@@ -46,6 +46,8 @@ pub fn count_days(data: &Vec<DaySchedule>) -> usize {
 pub fn periods_definition(data: &Vec<DaySchedule>) -> usize {
     let mut all_periods = Vec::new();
 
+    println!("PERIODS:{:?}", data);
+
     for day in data {
         all_periods.push(day.periods.len());
     }
@@ -58,7 +60,10 @@ pub fn periods_definition(data: &Vec<DaySchedule>) -> usize {
 }
 
 pub fn format_days_range(data: &Value) -> Vec<DaySchedule> {
+    println!("FORMATED_DAYS:{:?}", data);
+
     if let Some(Value::String(days_range_str)) = data.get("daysRange") {
+        println!("days_range_str:{:?}", days_range_str);
         let result: Result<Vec<DaySchedule>, _> = serde_json::from_str(days_range_str);
         match result {
             Ok(days) => days,
