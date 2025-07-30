@@ -51,7 +51,7 @@
                         <Button
                             icon="pi pi-eye"
                             class="ml-3"
-                            @click="router.push({ name: 'home' })"
+                            @click="router.push({ name: 'calendario' })"
                         />
                     </template>
                 </Column>
