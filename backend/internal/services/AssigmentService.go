@@ -89,23 +89,75 @@ func CreateAssigment(c echo.Context) error {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		fmt.Println("ERROR SERIALIZANDO JSON PARA RUST:", err)
-	} else {
-		resp, err := http.Post("http://schedulegenerator-algoritm-service-1:8088/generar", "application/json", bytes.NewBuffer(jsonData))
-		if err != nil {
-			fmt.Println("ERROR LLAMANDO A API RUST:", err)
-		} else {
-			defer resp.Body.Close()
-			body, _ := io.ReadAll(resp.Body)
-			fmt.Println("RESPUESTA DE RUST:", string(body))
-		}
+		return err
 	}
-	// schedule := model.Schedule{
-	// 	Assignment_id: data.ID,
-	// 	StartDate: jsonData.,
-	// }
 
-	// if err := db.DB.Create().Error; err != nil {
+	// Enviar a Rust
+	resp, err := http.Post("http://schedulegenerator-algoritm-service-1:8088/generar", "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Println("ERROR LLAMANDO A API RUST:", err)
+		return err
+	}
+	defer resp.Body.Close()
 
+	body, bodyErr := io.ReadAll(resp.Body)
+	if bodyErr != nil {
+		fmt.Println("ERROR LEYENDO RESPUESTA:", bodyErr)
+		return bodyErr
+	}
+	fmt.Println("RUST: ", string(body))
+
+	var rustSchedules []model.ScheduleResponse
+	err = json.Unmarshal(body, &rustSchedules)
+	if err != nil {
+		fmt.Println("ERROR DECODIFICANDO JSON DE RUST:", err)
+		return err
+	}
+
+	fmt.Println("RUST SCHEDULES: ", rustSchedules)
+	schedule := model.Schedule{
+		Assignment_id:     uint(data.ID),
+		ScheduleResponses: model.ScheduleResponses(rustSchedules),
+	}
+
+	fmt.Println("MODELO SCHEDULE", schedule)
+
+	if err := db.DB.Create(&schedule).Error; err != nil {
+		fmt.Println("Error insertando en DB:", err)
+	} else {
+		fmt.Println("Schedule insertado:", schedule)
+	}
+
+	// for _, rustData := range rustSchedules {
+	// 	fmt.Println("DATA EN FOR: ", rustData)
+	// 	fmt.Println("ASSIGMENT MODEL: ", data.ID)
+	// 	start, err := time.Parse("2006-01-02", rustData.StartDate)
+	// 	if err != nil {
+	// 		fmt.Println("Error parseando StartedDate:", err)
+	// 		continue
+	// 	}
+
+	// 	end, err := time.Parse("2006-01-02", rustData.EndDate)
+	// 	if err != nil {
+	// 		fmt.Println("Error parseando EndDate:", err)
+	// 		continue
+	// 	}
+
+	// 	schedule := model.Schedule{
+	// 		Assignment_id: uint(data.ID),
+	// 		StartDate:     start,
+	// 		EndDate:       end,
+	// 		Title:         rustData.Title,
+	// 		Tooltip:       rustData.Tooltip,
+	// 	}
+
+	// 	fmt.Println("MODELO SCHEDULE", schedule)
+
+	// 	if err := db.DB.Create(&schedule).Error; err != nil {
+	// 		fmt.Println("Error insertando en DB:", err)
+	// 	} else {
+	// 		fmt.Println("Schedule insertado:", schedule)
+	// 	}
 	// }
 
 	return c.JSON(http.StatusCreated, data)

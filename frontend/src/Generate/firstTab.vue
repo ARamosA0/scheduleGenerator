@@ -21,7 +21,10 @@
                             Selecciona los profesores disponibles
                         </p>
                     </div>
-                    <Button label="Seleccionar Todos" />
+                    <Button
+                        label="Seleccionar Todos"
+                        @click="selectAllTeachers"
+                    />
                 </div>
             </template>
             <template #content>
@@ -52,7 +55,10 @@
                         <p>Cursos</p>
                         <p class="text-sm">Selecciona los cursos a programar</p>
                     </div>
-                    <Button label="Seleccionar Todos" />
+                    <Button
+                        label="Seleccionar Todos"
+                        @click="selectAllSubjects"
+                    />
                 </div>
             </template>
             <template #content>
@@ -88,7 +94,7 @@
                             Selecciona los salones disponibles
                         </p>
                     </div>
-                    <Button label="Seleccionar Todos" />
+                    <Button label="Seleccionar Todos" @click="selectAllRooms" />
                 </div>
             </template>
             <template #content>
@@ -236,4 +242,25 @@ const allowContinue = computed(() => {
         selectedData.value.selectedTeachers.length === 0
     );
 });
+
+const selectAllTeachers = () => {
+    props.profesores.forEach((profesor: any) => {
+        profesor.status = true;
+        onToggleTeacher(profesor);
+    });
+};
+
+const selectAllSubjects = () => {
+    props.cursos.forEach((curso: any) => {
+        curso.status = true;
+        onToggleSubjects(curso);
+    });
+};
+
+const selectAllRooms = () => {
+    props.salones.forEach((salon: any) => {
+        salon.status = true;
+        onToggleRooms(salon);
+    });
+};
 </script>

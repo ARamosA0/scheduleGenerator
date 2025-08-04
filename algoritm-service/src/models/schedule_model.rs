@@ -9,8 +9,15 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ScheduleResponse {
     pub id: usize,
-    pub startedDate: NaiveDate,
+    pub startDate: NaiveDate,
     pub endDate: NaiveDate,
     pub title: String,
     pub tooltip: String,
+}
+
+pub struct AlgoritmInformation {
+    pub duration: usize,
+    pub state: String,
+    pub fitness: i64,
+    pub generations: usize,
 }

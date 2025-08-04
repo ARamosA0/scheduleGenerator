@@ -1,4 +1,5 @@
 use crate::models::algoritm_config::RawData;
+use crate::models::schedule_model::ScheduleResponse;
 use crate::services::process_data::format_json;
 use rocket::serde::json::Json;
 
@@ -18,10 +19,11 @@ pub async fn run_schedule() {
 }
 
 #[post("/generar", format = "json", data = "<config>")]
-pub async fn generar_horario(config: Json<RawData>) -> String {
+pub async fn generar_horario(config: Json<RawData>) -> Json<Vec<ScheduleResponse>> {
     let config = config.into_inner();
     let formated_config = format_json(config);
     let result = execute_process(&formated_config);
     println!("RESULTADO ALGORITMO: \n{:#?}", result);
-    "Algoritmo ejecutado con éxito".into()
+    // "Algoritmo ejecutado con éxito".into()
+    Json(result)
 }

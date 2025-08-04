@@ -161,7 +161,7 @@ pub fn format_schedule_response(
 
         response.push(ScheduleResponse {
             id: chromosome.curso_id,
-            startedDate: Utc::now().date_naive(),
+            startDate: Utc::now().date_naive(),
             endDate: Utc::now().date_naive(),
             title: subject_name,
             tooltip: room_name,

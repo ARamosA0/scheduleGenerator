@@ -188,11 +188,8 @@ const parseDaysRange = (jsonString: string) => {
                   );
 
             return {
-                day: item.day,
+                ...item,
                 periods: periodos,
-                status: item.status,
-                startHour: item.startHour,
-                endHour: item.endHour,
             };
         });
     } catch (e) {

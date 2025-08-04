@@ -32,6 +32,7 @@
                 :rows="5"
                 :rowsPerPageOptions="[5, 10, 20, 50]"
                 tableStyle="min-width:50rem"
+                :loading="loading"
             >
                 <Column field="processName" header="Proceso" />
                 <Column field="CreatedAt" header="Fecha">
@@ -46,12 +47,20 @@
                 <Column field="" header="Fitness" />
                 <Column field="horas" header="Generaciones" />
                 <Column field="acciones" header="Acciones">
-                    <template #body severity="secondary" rounded>
-                        <Button icon="pi pi-trash"></Button>
+                    <template #body="{ data }" severity="secondary" rounded>
+                        <Button
+                            icon="pi pi-trash"
+                            @click="delAssigment(data)"
+                        ></Button>
                         <Button
                             icon="pi pi-eye"
                             class="ml-3"
-                            @click="router.push({ name: 'calendario' })"
+                            @click="
+                                router.push({
+                                    name: 'calendario',
+                                    params: { id: data.ID },
+                                })
+                            "
                         />
                     </template>
                 </Column>
@@ -119,13 +128,15 @@
     </div>
 </template>
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { Button, Card, DataTable, Column } from "primevue";
 import { useRouter } from "vue-router";
-import { getAllAssigment } from "../../api/assigmentApi";
+import { getAllAssigment, deleteAssigment } from "../../api/assigmentApi";
 const router = useRouter();
 
 const data = ref([]);
+
+const loading = ref(false);
 
 // watch(
 //     () => saved.value,
@@ -143,5 +154,12 @@ onMounted(async () => {
 const getAssigments = async () => {
     const response = await getAllAssigment();
     data.value = response;
+};
+
+const delAssigment = async (data: object) => {
+    loading.value = true;
+    await deleteAssigment(data);
+    await getAllAssigment();
+    loading.value = false;
 };
 </script>
