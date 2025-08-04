@@ -32,17 +32,36 @@
                 :rows="5"
                 :rowsPerPageOptions="[5, 10, 20, 50]"
                 tableStyle="min-width:50rem"
+                :loading="loading"
             >
-                <Column field="codigo" header="Proceso" />
-                <Column field="nombre" header="Fecha" />
-                <Column field="creditos" header="Duracion" />
-                <Column field="horas" header="Estado" />
-                <Column field="horas" header="Fitness" />
-                <Column field="horas" header="Conflictos" />
+                <Column field="processName" header="Proceso" />
+                <Column field="CreatedAt" header="Fecha">
+                    <template #body="{ data }">
+                        {{
+                            new Date(data.CreatedAt).toLocaleDateString("es-PE")
+                        }}
+                    </template>
+                </Column>
+                <Column field="" header="Duracion" />
+                <Column field="" header="Estado" />
+                <Column field="" header="Fitness" />
                 <Column field="horas" header="Generaciones" />
                 <Column field="acciones" header="Acciones">
-                    <template #body severity="secondary" rounded>
-                        <Button icon="pi pi-trash"></Button>
+                    <template #body="{ data }" severity="secondary" rounded>
+                        <Button
+                            icon="pi pi-trash"
+                            @click="delAssigment(data)"
+                        ></Button>
+                        <Button
+                            icon="pi pi-eye"
+                            class="ml-3"
+                            @click="
+                                router.push({
+                                    name: 'calendario',
+                                    params: { id: data.ID },
+                                })
+                            "
+                        />
                     </template>
                 </Column>
             </DataTable>
@@ -109,10 +128,38 @@
     </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { Button, Card, DataTable, Column } from "primevue";
 import { useRouter } from "vue-router";
+import { getAllAssigment, deleteAssigment } from "../../api/assigmentApi";
 const router = useRouter();
 
 const data = ref([]);
+
+const loading = ref(false);
+
+// watch(
+//     () => saved.value,
+//     async (newVal: any) => {
+//         console.log("newVAL", newVal);
+//         await getAssigments();
+//     },
+//     { immediate: true },
+// );
+
+onMounted(async () => {
+    await getAssigments();
+});
+
+const getAssigments = async () => {
+    const response = await getAllAssigment();
+    data.value = response;
+};
+
+const delAssigment = async (data: object) => {
+    loading.value = true;
+    await deleteAssigment(data);
+    await getAllAssigment();
+    loading.value = false;
+};
 </script>

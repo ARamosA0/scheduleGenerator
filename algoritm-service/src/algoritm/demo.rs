@@ -1,7 +1,5 @@
 use genevo::{operator::prelude::*, prelude::*, random::Rng, types::fmt::Display};
-use rocket::serde::json::Json;
 use serde::Serialize;
-use std::fmt;
 
 const NUMBER_OF_QUEENS: i16 = 16;
 const NUM_ROWS: i16 = NUMBER_OF_QUEENS;

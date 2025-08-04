@@ -5,6 +5,7 @@ use rocket::serde::json::Json;
 mod algoritm;
 mod models;
 mod routes;
+mod services;
 
 use algoritm::demo::{run_genetic_algorithm, BestSolutionResult};
 use models::algoritm_config::AlgorithmConfig;

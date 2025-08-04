@@ -20,6 +20,7 @@
                 severity="contrast"
             />
         </div>
+        {{ props.template }}
         <Card v-for="(tr, key) in timeRange" :key="key" class="mt-4">
             <template #header>
                 <Button icon="pi pi-trash" severity="secondary" @click="" />
@@ -120,6 +121,7 @@ const days = [
     { label: "Miércoles", value: "Miercoles" },
     { label: "Jueves", value: "Jueves" },
     { label: "Viernes", value: "Viernes" },
+    { label: "Sabado", value: "Sabado" },
 ];
 
 const periods = [
@@ -150,6 +152,17 @@ const courseRef = toRef(props, "template");
 
 watch(courseRef, (newValue: any) => {
     template.value = newValue;
+    const parsedDates = newValue.daysRangeParsed.map(
+        (item: object, key: any) => {
+            return {
+                ...item,
+                startHour: new Date(item.startHour),
+                endHour: new Date(item.endHour),
+            };
+        },
+    );
+    timeRange.value = parsedDates;
+    console.log("NEWVALUE.TEMPLATE", newValue.daysRangeParsed);
 });
 
 function addTimeRange() {

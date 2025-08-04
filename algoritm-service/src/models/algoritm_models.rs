@@ -8,9 +8,9 @@ pub struct ClaseProgramada {
     pub bloque: usize,
 }
 
-pub struct HorarioBuilder {
+pub struct HorarioBuilder<'a> {
     pub subject: Vec<Subject>,
-    pub config: AlgorithmConfig,
+    pub config: &'a AlgorithmConfig,
 }
 
 pub struct HorarioMutator {

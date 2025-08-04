@@ -4,7 +4,7 @@
             icon="pi pi-angle-left"
             class="col-span-1"
             severity="secondary"
-            @click="router.push({ name: 'home' })"
+            @click="router.push({ name: 'historial' })"
         ></Button>
         <div class="col-span-7">
             <p class="text-2xl font-bold">Horario Semestre 2024-1</p>
@@ -65,7 +65,7 @@
         />
     </div>
 
-    <Card>
+    <Card class="mb-50">
         <template #title>
             <div class="flex justify-between items-start">
                 <div>
@@ -77,22 +77,35 @@
             </div>
         </template>
         <template #content>
-            <CalendarView :displayPeriodUom="data.displayPeriodUom" />
+            <CalendarView
+                :displayPeriodUom="data.displayPeriodUom"
+                :items="data.items"
+            />
         </template>
     </Card>
 </template>
 
 <script setup lang="js">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { DataTable, Column, Card, Button, Select } from "primevue";
+import { getScheduleById } from "../../api/scheduleApi";
 
 import CalendarView from "../common/calendarView.vue";
 
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
+const route = useRoute();
+
+const props = defineProps({
+    assigmentId: {
+        type: String,
+        default: "",
+    },
+});
 
 const data = ref({
     displayPeriodUom: "month",
+    items: null,
 });
 
 const periodsOptions = ref([
@@ -100,4 +113,15 @@ const periodsOptions = ref([
     { name: "Vista Mensual", value: "month" },
     { name: "Vista Anual", value: "year" },
 ]);
+
+const getSchedule = async () => {
+    console.log("ASSIGMENTIDS", route.params.id);
+    const response = await getScheduleById(route.params.id.toString());
+    data.value.items = response.schedule_response;
+    console.log("ITEMS", response.schedule_response);
+};
+
+onMounted(() => {
+    getSchedule();
+});
 </script>

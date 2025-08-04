@@ -11,10 +11,11 @@ impl RandomValueMutation for ClaseProgramada {
     where
         R: Rng + Sized,
     {
+        // println!("value:{:?} \nmin:{:?} \nmax:{:?} \n", value, _min, _max);
         ClaseProgramada {
-            dia: rng.gen_range(0..10),
-            bloque: rng.gen_range(0..10),
-            salon_id: rng.gen_range(0..3),
+            dia: rng.gen_range(_min.dia.._max.dia),
+            bloque: rng.gen_range(_min.bloque.._max.bloque),
+            salon_id: rng.gen_range(_min.salon_id.._max.salon_id),
             ..value
         }
     }
