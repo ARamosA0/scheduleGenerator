@@ -21,7 +21,14 @@
                         Gestiona los cursos del sistema
                     </p>
                 </div>
-                <Button label="Agregar Curso" @click="open" />
+                <div>
+                    <Button
+                        class="m-1"
+                        icon="pi-file-excel"
+                        @click="openExcelDialog = true"
+                    />
+                    <Button class="m-1" label="Agregar curso" @click="open" />
+                </div>
             </div>
         </template>
         <template #content>
@@ -59,14 +66,19 @@
         @update="update"
         :course="selectedData"
     />
+    <Dialog v-model:visible="openExcelDialog" modal header="Edit Profile">
+        <uploadFile
+            :items="columns"
+            :table-column="columns"
+            :type="'Subject'"
+        />
+    </Dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import Card from "primevue/card";
-import Button from "primevue/button";
+import { DataTable, Column, Card, Button, Dialog } from "primevue";
+import uploadFile from "../common/upload-file.vue";
 
 import addCursos from "./addCursos.vue";
 const selectedData = ref(null);
@@ -85,6 +97,46 @@ const openDialog = ref(false);
 const saved = ref(false);
 
 const data = ref([]);
+
+const openExcelDialog = ref(false);
+const columns = ref([
+    {
+        name: "Codigo",
+        value: "code",
+    },
+    {
+        name: "Nombre",
+        value: "name",
+    },
+    {
+        name: "Creditos",
+        value: "credits",
+    },
+    {
+        name: "Horas",
+        value: "hours",
+    },
+    {
+        name: "Semestre",
+        value: "semester",
+    },
+    {
+        name: "Carrera",
+        value: "career",
+    },
+    {
+        name: "Requerimientos",
+        value: "requirements",
+    },
+    {
+        name: "Descripcion",
+        value: "description",
+    },
+    {
+        name: "Aula",
+        value: "required_room_type",
+    },
+]);
 
 const getCourse = async () => {
     const response = await getAllCourses();

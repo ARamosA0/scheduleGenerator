@@ -19,7 +19,14 @@
                     <p class="text-xl">Lista de Salones</p>
                     <p class="text-base">Gestiona los salones del sistema</p>
                 </div>
-                <Button label="Agregar Salon" @click="open" />
+                <div>
+                    <Button
+                        class="m-1"
+                        icon="pi-file-excel"
+                        @click="openExcelDialog = true"
+                    />
+                    <Button class="m-1" label="Agregar Salon" @click="open" />
+                </div>
             </div>
         </template>
         <template #content>
@@ -53,14 +60,15 @@
         @save="saveRoom"
         @update="update"
     />
+    <Dialog v-model:visible="openExcelDialog" modal header="Edit Profile">
+        <uploadFile :items="columns" :table-column="columns" :type="'Room'" />
+    </Dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import Card from "primevue/card";
-import Button from "primevue/button";
+import { DataTable, Column, Card, Button, Dialog } from "primevue";
+import uploadFile from "../common/upload-file.vue";
 
 import addRoom from "../Salones/addRoom.vue";
 
@@ -80,6 +88,38 @@ const selectedData = ref(null);
 
 const openDialog = ref(false);
 const saved = ref(false);
+
+const openExcelDialog = ref(false);
+const columns = ref([
+    {
+        name: "Codigo",
+        value: "code",
+    },
+    {
+        name: "Nombre",
+        value: "name",
+    },
+    {
+        name: "Capacidad",
+        value: "capacity",
+    },
+    {
+        name: "Aula",
+        value: "room_type",
+    },
+    {
+        name: "Piso",
+        value: "floor",
+    },
+    {
+        name: "Edificio",
+        value: "building",
+    },
+    {
+        name: "Observaciones",
+        value: "observations",
+    },
+]);
 
 const getRooms = async () => {
     const response = await getAllRooms();

@@ -11,4 +11,7 @@ func RegisterSubjectRoutes(g *echo.Group) {
 	subject.POST("", services.CreateSubject)
 	subject.PUT("/:id", services.UpdateSubject)
 	subject.DELETE("/:id", services.DeleteSubjject)
+
+	subject.POST("/bulk", services.UploadSubjectFromExcel)
+
 }
