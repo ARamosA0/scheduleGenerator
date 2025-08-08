@@ -6,9 +6,11 @@ import (
 )
 
 func RegisterRoomRoutes(g *echo.Group) {
-	teacher := g.Group("/room")
-	teacher.GET("", services.GetAllRoom)
-	teacher.POST("", services.CreateRoom)
-	teacher.PUT("/:id", services.UpdateRoom)
-	teacher.DELETE("/:id", services.DeleteRoom)
+	room := g.Group("/room")
+	room.GET("", services.GetAllRoom)
+	room.POST("", services.CreateRoom)
+	room.PUT("/:id", services.UpdateRoom)
+	room.DELETE("/:id", services.DeleteRoom)
+
+	room.POST("/bulk", services.UploadRoomFromExcel)
 }

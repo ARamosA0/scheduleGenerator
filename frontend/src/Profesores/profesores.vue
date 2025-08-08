@@ -19,7 +19,18 @@
                     <p class="text-xl">Lista de Profesores</p>
                     <p class="text-base">Gestiona los profesores del sistema</p>
                 </div>
-                <Button label="Agregar profesor" @click="open" />
+                <div>
+                    <Button
+                        class="m-1"
+                        icon="pi-file-excel"
+                        @click="openExcelDialog = true"
+                    />
+                    <Button
+                        class="m-1"
+                        label="Agregar profesor"
+                        @click="open"
+                    />
+                </div>
             </div>
         </template>
         <template #content>
@@ -55,14 +66,19 @@
         @update="update"
         :teacher="selectedData"
     />
+    <Dialog v-model:visible="openExcelDialog" modal header="Edit Profile">
+        <uploadFile
+            :items="columns"
+            :table-column="columns"
+            :type="'Teacher'"
+        />
+    </Dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import Card from "primevue/card";
-import Button from "primevue/button";
+import { DataTable, Column, Card, Button, Dialog } from "primevue";
+import uploadFile from "../common/upload-file.vue";
 
 import {
     getAllTeachers,
@@ -81,6 +97,34 @@ const selectedData = ref(null);
 
 const openDialog = ref(false);
 const saved = ref(false);
+const openExcelDialog = ref(false);
+
+const columns = ref([
+    {
+        name: "Nombre",
+        value: "name",
+    },
+    {
+        name: "Apellido",
+        value: "lastName",
+    },
+    {
+        name: "Email",
+        value: "email",
+    },
+    {
+        name: "Telefono",
+        value: "phone",
+    },
+    {
+        name: "Especialidad",
+        value: "specialty",
+    },
+    {
+        name: "Disponibilidad",
+        value: "available_days",
+    },
+]);
 
 const getTeachers = async () => {
     const response = await getAllTeachers();

@@ -26,4 +26,17 @@ export const updateRoom = async (room: any) =>
   api.put(`/room/${room.ID}`, room);
 export const deleteRoom = async (room: any) => api.delete(`/room/${room.ID}`);
 
+export const uploadRoomExcelData = async (
+  file: string,
+  selectedMapping: any,
+) => {
+  console.log("FILEID", file);
+  console.log("Selected MAPPING", selectedMapping);
+  const data = {
+    fileId: file,
+    selectedMapping: selectedMapping,
+  };
+  return api.post("/room/bulk", data);
+};
+
 export default api;

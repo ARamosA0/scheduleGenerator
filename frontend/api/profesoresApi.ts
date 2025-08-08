@@ -29,4 +29,17 @@ export const deleteTeacher = async (teacher: any) => {
   return api.delete(`/teachers/${teacher.ID}`);
 };
 
+export const uploadTeacherExcelData = async (
+  file: string,
+  selectedMapping: any,
+) => {
+  console.log("FILEID", file);
+  console.log("Selected MAPPING", selectedMapping);
+  const data = {
+    fileId: file,
+    selectedMapping: selectedMapping,
+  };
+  return api.post("/teachers/bulk", data);
+};
+
 export default api;

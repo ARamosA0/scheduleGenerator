@@ -11,4 +11,6 @@ func RegisterTeacherRoutes(g *echo.Group) {
 	teacher.POST("", services.CreateTeacher)
 	teacher.PUT("/:id", services.UpdateTeacher)
 	teacher.DELETE("/:id", services.DeleteTeacher)
+
+	teacher.POST("/bulk", services.UploadDataFromExcel)
 }
