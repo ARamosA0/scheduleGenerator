@@ -7,5 +7,10 @@ import (
 
 func RegisterGroupRoutes(g *echo.Group) {
 	group := g.Group("/group")
-	group.GET("", services.GetAllAssigments)
+	group.GET("", services.GetAllGroups)
+	group.POST("", services.CreateGroup)
+	group.PUT("/:id", services.UpdateGroup)
+	group.DELETE("/:id", services.DeleteGroup)
+
+	group.POST("/bulk", services.UploadGroupFromExcel)
 }

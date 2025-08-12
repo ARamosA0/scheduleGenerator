@@ -150,6 +150,7 @@ import { validateFile } from "../../api/validateDataApi";
 import { uploadTeacherExcelData } from "../../api/profesoresApi";
 import { uploadSubjectExcelData } from "../../api/cursosApi";
 import { uploadRoomExcelData } from "../../api/salonesApi";
+import { uploadGroupExcelData } from "../../api/grupoApi";
 import type { FileUploadSelectEvent } from "primevue/fileupload";
 
 const props = defineProps({
@@ -237,6 +238,8 @@ const updloadData = async (activateCallback: any) => {
         await uploadSubjectExcelData(fileName.value, selectedMapping.value);
     } else if (props.type === "Room") {
         await uploadRoomExcelData(fileName.value, selectedMapping.value);
+    } else if (props.type === "Group") {
+        await uploadGroupExcelData(fileName.value, selectedMapping.value);
     } else {
     }
 };

@@ -4,7 +4,7 @@
         Generación automática de horarios usando algoritmos genéticos
     </h4>
 
-    <div class="grid grid-cols-3 gap-3 mt-5">
+    <div class="grid grid-cols-2 gap-3 mt-5">
         <div v-for="(cardData, index) in cardsData" :key="index">
             <Card class="mt-1">
                 <template #title>
@@ -53,6 +53,12 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const cardsData = ref([
+    {
+        title: "Grupos",
+        subtitle: "Gestionar información de Secciones o Carreras",
+        btnName: "Administrar Secciones o Carreras",
+        btnRedirect: "grupo",
+    },
     {
         title: "Profesores",
         subtitle: "Gestionar información de docentes",

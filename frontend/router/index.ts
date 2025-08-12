@@ -7,12 +7,14 @@ import Template from "../src/Template/template.vue";
 import Historial from "../src/Historial/historial.vue";
 import GenerateSchedule from "../src/Generate/generateSchedule.vue";
 import Schedulle from "../src/Schedulle/schedule.vue";
+import Grupos from "../src/Grupos/grupo.vue";
 
 const routes = [
   { path: "/", name: "home", component: Home },
   { path: "/cursos", name: "cursos", component: Cursos },
   { path: "/profesores", name: "profesores", component: Profesores },
   { path: "/salones", name: "salones", component: Salones },
+  { path: "/grupo", name: "grupo", component: Grupos },
   { path: "/template", name: "template", component: Template },
   { path: "/generate", name: "generar", component: GenerateSchedule },
   { path: "/historial", name: "historial", component: Historial },
