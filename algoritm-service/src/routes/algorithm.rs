@@ -22,8 +22,8 @@ pub async fn run_schedule() {
 pub async fn generar_horario(config: Json<RawData>) -> Json<Vec<ScheduleResponse>> {
     let config = config.into_inner();
     let formated_config = format_json(config);
+    // println!("----------FORMATED CONFIG----------: \n{:#?}", formated_config);
     let result = execute_process(&formated_config);
-    println!("RESULTADO ALGORITMO: \n{:#?}", result);
-    // "Algoritmo ejecutado con éxito".into()
+    // println!("RESULTADO ALGORITMO: \n{:#?}", result);
     Json(result)
 }

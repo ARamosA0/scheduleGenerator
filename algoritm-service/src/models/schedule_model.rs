@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{NaiveDate, NaiveDateTime};
 use genevo::{operator::prelude::*, prelude::*, random::Rng, types::fmt::Display};
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -9,8 +9,8 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ScheduleResponse {
     pub id: usize,
-    pub startDate: NaiveDate,
-    pub endDate: NaiveDate,
+    pub startDate: NaiveDateTime,
+    pub endDate: NaiveDateTime,
     pub title: String,
     pub tooltip: String,
 }

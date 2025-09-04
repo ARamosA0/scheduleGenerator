@@ -15,31 +15,36 @@ fn calcular_colisiones(
     params: &AlgorithmConfig,
 ) -> usize {
     let mut colisiones = 0;
+    let mut colisiones_periodo = 0;
     let mut salon_ocupado =
         vec![vec![vec![false; params.num_periods]; params.num_days]; params.num_rooms];
 
+    let mut periodo_ocupado = vec![vec![false; params.num_periods]; params.num_days]; 
+
     let mut profesor_ocupado =
         vec![vec![vec![false; params.num_periods]; params.num_days]; params.num_teachers];
-    for (i, clase) in genoma.iter().enumerate() {
-        // println!(
-        //     "Clase #{i}: curso_id={}, salon_id={}, dia={}, bloque={}",
-        //     clase.curso_id, clase.salon_id, clase.dia, clase.bloque
-        // );
-        // Verificar colisiones de salón
-        if salon_ocupado[clase.salon_id][clase.dia][clase.bloque] {
+    // println!("PERIODO OCUPADO:{:?}", salon_ocupado);
+    // println!("salones:{:?}", params.num_rooms);
+    // for (i, clase) in genoma.iter().enumerate() {
+    //     if salon_ocupado[clase.salon_id][clase.dia][clase.bloque] {
+    //         colisiones += 1;
+    //     } else {
+    //         salon_ocupado[clase.salon_id][clase.dia][clase.bloque] = true;
+    //     }
+    // }
+
+    for clase in genoma.iter() {
+        // Verificar que los índices estén dentro de los límites
+        if clase.dia >= params.num_days || clase.bloque >= params.num_periods {
+            colisiones += 1; // Fuera de límites cuenta como colisión
+            continue;
+        }
+        
+        if periodo_ocupado[clase.dia][clase.bloque] {
             colisiones += 1;
         } else {
-            salon_ocupado[clase.salon_id][clase.dia][clase.bloque] = true;
+            periodo_ocupado[clase.dia][clase.bloque] = true;
         }
-
-        // Verificar colisiones de profesor
-        // if let Some(subject) = subjects.iter().find(|c| c.id == clase.curso_id) {
-        //     if profesor_ocupado[subject.profesor_id][clase.dia][clase.bloque] {
-        //         colisiones += 1;
-        //     } else {
-        //         profesor_ocupado[subject.profesor_id][clase.dia][clase.bloque] = true;
-        //     }
-        // }
     }
     colisiones
 }
@@ -49,27 +54,27 @@ pub struct FitnessCalc<'a> {
     pub subject: Vec<Subject>,
     pub param: &'a AlgorithmConfig,
 }
-// pub struct FitnessCalc {
-//     pub subject: Vec<Subject>,
-//     pub param: AlgorithmConfig,
-// }
+
 
 impl<'a> FitnessFunction<HorarioGenome, usize> for FitnessCalc<'a> {
     fn fitness_of(&self, genome: &HorarioGenome) -> usize {
         let colisiones = calcular_colisiones(genome, &self.subject, &self.param);
-        // println!(
-        //     "GENOME:{:?} \nSUBJECT:{:?} \nPARAM:{:?}",
-        //     genome, &self.subject, &self.param
-        // );
-        let max_colisiones = genome.len() * colisiones; // Máximo posible de colisiones
 
-        // Fitness más alto = menos colisiones
-        if max_colisiones == 0 {
-            100
-        } else {
-            let score = (max_colisiones - colisiones) * 100 / max_colisiones;
-            score as usize
+        if genome.len() == 0 {
+            return 0;
         }
+
+        // porcentaje de clases SIN colisiones
+        let score = ((genome.len().saturating_sub(colisiones)) * 100) / genome.len();
+
+        println!(
+            "COLISIONES:{} LEN:{} FITNESS:{}",
+            colisiones,
+            genome.len(),
+            score
+        );
+
+        score
     }
 
     fn average(&self, values: &[usize]) -> usize {

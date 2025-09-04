@@ -18,7 +18,10 @@ export const getAllGroups = async () => {
     throw error;
   }
 };
-export const createGroup = async (group: any) => api.post("/group", group);
+export const createGroup = async (group: any) => {
+  console.log('GROUP', group)
+  return api.post("/group", group);
+}
 export const updateGroup = async (group: any) => {
   console.log("ID", group);
   return api.put(`/group/${group.ID}`, group);

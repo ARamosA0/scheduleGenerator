@@ -12,6 +12,7 @@ type Assignment struct {
 	Subjects datatypes.JSON `json:"subjects"`
 	Teachers datatypes.JSON `json:"teachers"`
 	Rooms    datatypes.JSON `json:"rooms"`
+	Groups   datatypes.JSON `json:"groups"`
 
 	ProcessName string  `json:"processName"`
 	Population  int     `json:"population"`
@@ -28,10 +29,11 @@ type Process struct {
 }
 
 type SelectedData struct {
-	SelectedTemplate uint      `json:"selectedTemplate"`
-	SelectedSubjects []Subject `json:"selectedSubjects" gorm:"many2many:assignment_subjects"`
-	SelectedRooms    []Room    `json:"selectedRooms" gorm:"many2many:assignment_teachers"`
-	SelectedTeachers []Teacher `json:"selectedTeachers" gorm:"many2many:assignment_rooms"`
+	SelectedTemplate uint         `json:"selectedTemplate"`
+	SelectedSubjects []Subject    `json:"selectedSubjects" gorm:"many2many:assignment_subjects"`
+	SelectedRooms    []Room       `json:"selectedRooms" gorm:"many2many:assignment_teachers"`
+	SelectedTeachers []Teacher    `json:"selectedTeachers" gorm:"many2many:assignment_rooms"`
+	SelectedGroups   []GroupInput `json:"selectedGroups" gorm:"many2many:assignment_groups"`
 }
 
 type ProcessData struct {

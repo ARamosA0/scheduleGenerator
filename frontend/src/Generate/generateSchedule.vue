@@ -26,6 +26,7 @@
                     :cursos="cursos"
                     :salones="salones"
                     :templates="templates"
+                    :grupos="grupos"
                     @change-tab="changeTab"
                     @tab1Data="tab1Data"
                 />
@@ -47,6 +48,7 @@ import { getAllCourses } from "../../api/cursosApi";
 import { getAllRooms } from "../../api/salonesApi";
 import { getAllTeachers } from "../../api/profesoresApi";
 import { getAllTemplates } from "../../api/templateApi";
+import { getAllGroups } from "../../api/grupoApi";
 import { createAssigment } from "../../api/assigmentApi";
 
 const data = ref({
@@ -80,6 +82,7 @@ const profesores = ref();
 const cursos = ref();
 const salones = ref();
 const templates = ref();
+const grupos = ref();
 
 const changeTab = (value: any) => (data.value.tab = value);
 
@@ -88,8 +91,9 @@ onMounted(async () => {
     cursos.value = await getAllCourses();
     salones.value = await getAllRooms();
     templates.value = await getAllTemplates();
+    grupos.value = await getAllGroups();
 
-    console.log("TEMPLATES", templates.value);
+    console.log("GROUPS", grupos.value);
 });
 
 const runProcess = async (value: any) => {

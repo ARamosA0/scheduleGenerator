@@ -129,14 +129,14 @@ const open = () => {
 };
 
 const saveGroup = async (value: any) => {
-    console.log("SAVE TEACHER", value);
+    console.log("SAVE GROUP", value);
     await createGroup(value);
     saved.value = true;
     await getCourse();
 };
 
 const update = async (value: any) => {
-    console.log("UPDATE TEACHER", value);
+    console.log("UPDATE GROUP", value);
     await updateGroup(value);
     saved.value = true;
     // await getTeachers();

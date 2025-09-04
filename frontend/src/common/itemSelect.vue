@@ -36,6 +36,7 @@ defineEmits(["toggle"]);
 
 const search = ref();
 const filteredData = computed(() => {
+    if (search.value === null || search.value === undefined) return props.data;
     if (!search.value.trim()) return props.data;
     return props.data.filter((item) =>
         JSON.stringify(item).toLowerCase().includes(search.value.toLowerCase()),

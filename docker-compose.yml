@@ -7,6 +7,8 @@ services:
     volumes:
       - ./algoritm-service:/app
     command: cargo watch -x run
+    networks:  # ← Añadir esta línea
+      - backend-network  # ← Añadir esta línea
 
   backend:
     build:
@@ -23,7 +25,8 @@ services:
     command: air -c .air.toml
     env_file:
       - .env
-      # command: ./main
+    networks:  # ← Añadir esta línea
+      - backend-network  # ← Añadir esta línea
 
   frontend:
     build:
@@ -35,6 +38,8 @@ services:
       - ./frontend:/app
     working_dir: /app
     command: npm run dev
+    networks:  # ← Añadir esta línea
+      - backend-network  # ← Añadir esta línea
 
   postgres:
     image: postgres:15
@@ -53,11 +58,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:  # ← Añadir esta línea
+      - backend-network  # ← Añadir esta línea
 
 volumes:
   postgres_data:
 
 networks:
-  dafault:
-    name: backend-network
+  backend-network:  # ← Corregir el nombre (estaba mal escrito)
     driver: bridge

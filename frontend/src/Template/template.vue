@@ -108,6 +108,7 @@
         :template="isCreate ? null : selectedTemplate"
         :create="isCreate"
         @save="save"
+        @update="update"
     />
 </template>
 <script setup lang="ts">
@@ -237,14 +238,17 @@ const save = async (value: any) => {
     await getTemplates();
 };
 
-const update = async () => {
-    console.log("UPDATE TEMPLATE", selectedTemplate.value);
-    const updatedValuesJson = JSON.stringify(
-        selectedTemplate.value.daysRangeParsed,
-    );
-    console.log("JSON UPDATE", updatedValuesJson);
-    selectedTemplate.value.daysRange = updatedValuesJson;
-    await updateTemplate(selectedTemplate.value);
-    console.log("SELECTED TEMPLATE", selectedTemplate.value);
+const update = async (value: any) => {
+    console.log("UPDATE VALUE", value);
+    const periodos = parseDaysRange(value.daysRange);
+    value.daysRangeParsed = periodos;
+    const updateValuesJson = JSON.stringify(value.daysRangeParsed);
+    value.daysRange = updateValuesJson;
+    await updateTemplate(value);
+    // const updatedValuesJson = JSON.stringify(
+    //     selectedTemplate.value.daysRangeParsed,
+    // );
+    // selectedTemplate.value.daysRange = updatedValuesJson;
+    // await updateTemplate(selectedTemplate.value);
 };
 </script>

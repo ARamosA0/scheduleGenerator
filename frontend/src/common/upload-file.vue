@@ -107,10 +107,10 @@
                             <Message severity="success"
                                 >¡Archivo procesado exitosamente!</Message
                             >
-                            <Message severity="error"
+                            <!-- <Message severity="error"
                                 >Se encontraron 2 errores que deben
                                 corregirse</Message
-                            >
+                            > -->
                         </div>
                     </div>
                     <div class="flex pt-6 justify-between">

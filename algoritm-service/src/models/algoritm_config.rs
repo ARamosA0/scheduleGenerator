@@ -1,13 +1,14 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::models::{room::Room, subject::Subject, teacher::Teacher};
+use crate::models::{group::Group, room::Room, subject::Subject, teacher::Teacher};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AlgorithmConfig {
     pub num_subjects: usize,
     pub num_rooms: usize,
     pub num_teachers: usize,
+    pub num_groups: usize,
     pub num_days: usize,
     pub num_periods: usize,
 
@@ -22,6 +23,7 @@ pub struct AlgorithmConfig {
     pub subjects: Vec<Subject>,
     pub teachers: Vec<Teacher>,
     pub rooms: Vec<Room>,
+    pub groups: Vec<Group>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -35,6 +37,7 @@ pub struct RawData {
     pub subjects: Value,
     pub teachers: Value,
     pub rooms: Value,
+    pub groups: Value,
 
     #[serde(rename = "processName")]
     pub process_name: String,
@@ -59,7 +62,7 @@ pub struct Period {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct DaySchedule {
-    pub day: String,
+    pub day: usize,
     pub periods: Vec<Period>,
     pub status: bool,
     pub startHour: String,

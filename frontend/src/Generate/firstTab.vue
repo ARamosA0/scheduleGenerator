@@ -11,20 +11,41 @@
             class="w-full mt-3"
         />
     </div>
-    <div class="grid grid-cols-3 gap-3 mt-5">
+    <div class="grid grid-cols-4 gap-2 mt-5">
+        <Card>
+            <template #title>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p>Grupos</p>
+                    </div>
+                    <Button label="Todos" @click="selectAllGroups" />
+                </div>
+            </template>
+            <template #content>
+                <itemSelect :data="props.grupos" @toggle="onToggleGroup">
+                    <template #item="{ item, onToggle }">
+                        <Checkbox
+                            v-model="item.status"
+                            binary
+                            @change="onToggle"
+                        />
+                        <div class="flex flex-col">
+                            <p class="text-lg font-bold">
+                                {{ item.name }}
+                            </p>
+                            <p class="text-sm">{{ item.size }} alumnos</p>
+                        </div>
+                    </template>
+                </itemSelect>
+            </template>
+        </Card>
         <Card>
             <template #title>
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="font-bold">Profesores</p>
-                        <p class="text-sm">
-                            Selecciona los profesores disponibles
-                        </p>
                     </div>
-                    <Button
-                        label="Seleccionar Todos"
-                        @click="selectAllTeachers"
-                    />
+                    <Button label="Todos" @click="selectAllTeachers" />
                 </div>
             </template>
             <template #content>
@@ -53,12 +74,8 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <p>Cursos</p>
-                        <p class="text-sm">Selecciona los cursos a programar</p>
                     </div>
-                    <Button
-                        label="Seleccionar Todos"
-                        @click="selectAllSubjects"
-                    />
+                    <Button label="Todos" @click="selectAllSubjects" />
                 </div>
             </template>
             <template #content>
@@ -90,11 +107,8 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <p>Salones</p>
-                        <p class="text-sm">
-                            Selecciona los salones disponibles
-                        </p>
                     </div>
-                    <Button label="Seleccionar Todos" @click="selectAllRooms" />
+                    <Button label="Todos" @click="selectAllRooms" />
                 </div>
             </template>
             <template #content>
@@ -134,7 +148,13 @@
             </div>
         </template>
         <template #content>
-            <div class="grid grid-cols-3 gap-3 mt-2">
+            <div class="grid grid-cols-4 gap-3 mt-2">
+                <div class="text-center">
+                    <p class="text-2xl">
+                        {{ selectedData.selectedGroups.length }}
+                    </p>
+                    <p class="text-sm">Grupos Seleccionados</p>
+                </div>
                 <div class="text-center">
                     <p class="text-2xl">
                         {{ selectedData.selectedTeachers.length }}
@@ -185,6 +205,10 @@ const props = defineProps({
         type: Array,
         default: null,
     },
+    grupos: {
+        type: Array,
+        default: null,
+    },
 });
 
 const selectedData = ref({
@@ -192,6 +216,7 @@ const selectedData = ref({
     selectedSubjects: [],
     selectedRooms: [],
     selectedTeachers: [],
+    selectedGroups: [],
 });
 
 const emits = defineEmits(["changeTab", "tab1Data"]);
@@ -199,6 +224,19 @@ const ChangeTab = () => {
     console.log("TAB1DATA", selectedData.value);
     emits("changeTab", "1");
     emits("tab1Data", selectedData.value);
+};
+
+const onToggleGroup = (item: any) => {
+    console.log('GROUP ITEM', item)
+    const index = selectedData.value.selectedGroups.findIndex(
+        (t) => t.ID === item.ID,
+    );
+    if (item.status && index === -1) {
+        selectedData.value.selectedGroups.push(item);
+    } else if (!item.status && index !== -1) {
+        selectedData.value.selectedGroups.splice(index, 1);
+    }
+    console.log('GROUP SELECTED', selectedData.value.selectedGroups)
 };
 
 const onToggleTeacher = (item: any) => {
@@ -261,6 +299,13 @@ const selectAllRooms = () => {
     props.salones.forEach((salon: any) => {
         salon.status = true;
         onToggleRooms(salon);
+    });
+};
+
+const selectAllGroups = () => {
+    props.grupos.forEach((group: any) => {
+        group.status = true;
+        onToggleGroup(group);
     });
 };
 </script>

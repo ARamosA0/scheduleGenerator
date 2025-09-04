@@ -16,7 +16,7 @@ type Template struct {
 }
 
 type TimeRange struct {
-	Day       string   `json:"day"`
+	Day       int      `json:"day"`
 	StartHour TimeOnly `json:"startHour"`
 	EndHour   TimeOnly `json:"endHour"`
 	Period    int      `json:"period"`

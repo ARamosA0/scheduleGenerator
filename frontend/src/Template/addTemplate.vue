@@ -20,7 +20,6 @@
                 severity="contrast"
             />
         </div>
-        {{ props.template }}
         <Card v-for="(tr, key) in timeRange" :key="key" class="mt-4">
             <template #header>
                 <Button icon="pi pi-trash" severity="secondary" @click="" />
@@ -116,12 +115,13 @@ const props = defineProps({
 });
 
 const days = [
-    { label: "Lunes", value: "Lunes" },
-    { label: "Martes", value: "Martes" },
-    { label: "Miércoles", value: "Miercoles" },
-    { label: "Jueves", value: "Jueves" },
-    { label: "Viernes", value: "Viernes" },
-    { label: "Sabado", value: "Sabado" },
+    { label: "Lunes", value: 1 },
+    { label: "Martes", value: 2 },
+    { label: "Miércoles", value: 3 },
+    { label: "Jueves", value: 4 },
+    { label: "Viernes", value: 5 },
+    { label: "Sabado", value: 6 },
+    { label: "Domingo", value: 7 },
 ];
 
 const periods = [
@@ -181,27 +181,14 @@ const closeDialog = () => {
 
 const saveTemplate = () => {
     console.log("props.template", props.template);
-    // if (props.template !== null) {
-    //     console.log("UPDATE");
-    //     emit("update:visible", false);
-    //     template.value.timeRange = timeRange.value;
-    //     emit("update", template.value.timeRange);
-    // } else {
-    //     emit("update:visible", false);
-    //     template.value.timeRange = timeRange.value;
-    //     emit("save", template.value.timeRange);
-    // }
-    emit("update:visible", false);
-    template.value.daysRange = JSON.stringify(timeRange.value);
-    emit("save", template.value);
-    console.log("TIME RANGE", template.value);
-    // data.value.course.code = "";
-    // data.value.course.name = "";
-    // data.value.course.credits = 0;
-    // data.value.course.hours = 0;
-    // data.value.course.semester = 0;
-    // data.value.course.career = "";
-    // data.value.course.requirements = "";
-    // data.value.course.description = "";
+    if (props.template !== null) {
+        emit("update:visible", false);
+        template.value.daysRange = JSON.stringify(timeRange.value);
+        emit("update", template.value);
+    } else {
+        emit("update:visible", false);
+        template.value.daysRange = JSON.stringify(timeRange.value);
+        emit("save", template.value);
+    }
 };
 </script>
