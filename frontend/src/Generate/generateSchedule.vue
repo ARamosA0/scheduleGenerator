@@ -32,7 +32,7 @@
                 />
             </TabPanel>
             <TabPanel value="1">
-                <secondTab @start-process="runProcess" />
+                <secondTab @start-process="runProcess" :execution-result="executionResult" />
             </TabPanel>
         </TabPanels>
     </Tabs>
@@ -50,6 +50,8 @@ import { getAllTeachers } from "../../api/profesoresApi";
 import { getAllTemplates } from "../../api/templateApi";
 import { getAllGroups } from "../../api/grupoApi";
 import { createAssigment } from "../../api/assigmentApi";
+
+const executionResult = ref()
 
 const data = ref({
     start: false,
@@ -100,6 +102,9 @@ const runProcess = async (value: any) => {
     console.log("TAB2VALUE", value);
     runProcessData.value.processData = value;
     console.log("RUNPROCESS", runProcessData.value);
-    await createAssigment(runProcessData.value);
+    const result = await createAssigment(runProcessData.value);
+    console.log('RESULT EXECUTION', result.data)
+    executionResult.value = result.data
+    console.log("EXECUTION RESULT", executionResult.value)
 };
 </script>

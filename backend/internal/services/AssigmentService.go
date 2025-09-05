@@ -106,16 +106,18 @@ func CreateAssigment(c echo.Context) error {
 		return bodyErr
 	}
 
-	var rustSchedules []model.ScheduleResponse
-	err = json.Unmarshal(body, &rustSchedules)
+	var rustResult model.ScheduleResponse
+	err = json.Unmarshal(body, &rustResult)
 	if err != nil {
 		fmt.Println("ERROR DECODIFICANDO JSON DE RUST:", err)
 		return err
 	}
 
+	fmt.Println("RUST SCHEDULE", rustResult)
+
 	schedule := model.Schedule{
 		Assignment_id:     uint(data.ID),
-		ScheduleResponses: model.ScheduleResponses(rustSchedules),
+		ScheduleResponses: rustResult.Bestgeneration,
 	}
 
 	if err := db.DB.Create(&schedule).Error; err != nil {
@@ -124,7 +126,9 @@ func CreateAssigment(c echo.Context) error {
 		fmt.Println("Schedule insertado:", schedule)
 	}
 
-	return c.JSON(http.StatusCreated, data)
+	rustResult.ScheduleId = schedule.ID
+
+	return c.JSON(http.StatusCreated, rustResult)
 }
 
 func UpdateAssigment(c echo.Context) error {

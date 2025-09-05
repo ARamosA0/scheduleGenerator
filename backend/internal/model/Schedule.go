@@ -10,16 +10,20 @@ import (
 
 type Schedule struct {
 	gorm.Model
-	Assignment_id     uint              `json:"assigment_id"`
-	Assignment        Assignment        `gorm:"foreignKey:Assignment_id"`
-	ScheduleResponses ScheduleResponses `json:"schedule_response" gorm:"type:json"`
-	// StartDate     time.Time  `json:"start_date"`
-	// EndDate       time.Time  `json:"end_date"`
-	// Title         string     `json:"title"`
-	// Tooltip       string     `json:"tooltip"`
+	Assignment_id     uint        `json:"assigment_id"`
+	Assignment        Assignment  `gorm:"foreignKey:Assignment_id"`
+	ScheduleResponses BestGenomes `json:"schedule_response" gorm:"type:json"`
 }
 
 type ScheduleResponse struct {
+	ID             uint         `json:"id"`
+	Bestgeneration []BestGenome `json:"bestGeneration"`
+	BestFitness    int          `json:"bestFitness"`
+	Iteration      int          `json:"iteration"`
+	ScheduleId     uint         `json:"scheduleId"`
+}
+
+type BestGenome struct {
 	ID        uint   `json:"id"`
 	StartDate string `json:"startDate"`
 	EndDate   string `json:"endDate"`
@@ -27,16 +31,16 @@ type ScheduleResponse struct {
 	Tooltip   string `json:"tooltip"`
 }
 
-type ScheduleResponses []ScheduleResponse
+type BestGenomes []BestGenome
 
-func (s ScheduleResponses) Value() (driver.Value, error) {
+func (s BestGenomes) Value() (driver.Value, error) {
 	return json.Marshal(s)
 }
 
-func (s *ScheduleResponses) Scan(value interface{}) error {
+func (s *BestGenomes) Scan(value interface{}) error {
 	bytes, ok := value.([]byte)
 	if !ok {
 		return fmt.Errorf("Scan source was not []byte")
 	}
-	return json.Unmarshal(bytes, &s)
+	return json.Unmarshal(bytes, s)
 }

@@ -8,7 +8,7 @@ use crate::models::{
 use crate::algoritm::fitnes::FitnessCalc;
 
 use crate::models::algoritm_models::HorarioBuilder;
-use crate::models::schedule_model::ScheduleResponse;
+use crate::models::schedule_model::{ScheduleResponse, BestGenome};
 use genevo::{operator::prelude::*, prelude::*, random::Rng, types::fmt::Display};
 use rocket::config;
 use std::fmt::{self, format};
@@ -47,7 +47,7 @@ impl Display for HorarioGenomeDisplay {
     }
 }
 
-pub fn execute_process(config: &AlgorithmConfig) -> Vec<ScheduleResponse> {
+pub fn execute_process(config: &AlgorithmConfig) -> ScheduleResponse {
     let subjects: &Vec<Subject> = &config.subjects;
     let group: &Vec<Group> = &config.groups;
 
@@ -127,21 +127,31 @@ pub fn execute_process(config: &AlgorithmConfig) -> Vec<ScheduleResponse> {
                 println!("Mejor fitness: {}", best.solution.fitness);
                 // println!("\nMEJOR HORARIO ENCONTRADO:\n{:?}", best.solution.genome);
                 let best_genome = best.solution.genome;
-                return format_schedule_response(best_genome, &config);
+                let formated_best_genome = format_schedule_response((best_genome), &config);
+
+                break ScheduleResponse {
+                    bestGeneration: formated_best_genome,
+                    bestFitness: best.solution.fitness,
+                    iteration: step.iteration
+                };
+
             }
             Err(error) => {
                 println!("Error: {}", error);
-                break;
+                break ScheduleResponse {
+                    bestGeneration: Vec::<BestGenome>::new(),
+                    bestFitness: 0,
+                    iteration: 0,
+                };
             }
         }
     }
-    vec![]
 }
 
 pub fn format_schedule_response(
     best_genome: Vec<ClaseProgramada>,
     config: &AlgorithmConfig,
-) -> Vec<ScheduleResponse> {
+) -> Vec<BestGenome> {
     println!("BEST GENOME:{:?}", best_genome);
     let mut response = vec![];
 
@@ -167,7 +177,7 @@ pub fn format_schedule_response(
         let (start_date, end_date) = get_period_datetime(&chromosome, &config.template, &base_date);
         println!("Format DAY:{:?}", format_day);
         // println!("Format PERIOD:{:?}", format_period);
-        response.push(ScheduleResponse {
+        response.push(BestGenome {
             id: chromosome.curso_id,
             startDate: start_date,
             endDate: end_date,

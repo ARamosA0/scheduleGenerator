@@ -19,7 +19,7 @@ pub async fn run_schedule() {
 }
 
 #[post("/generar", format = "json", data = "<config>")]
-pub async fn generar_horario(config: Json<RawData>) -> Json<Vec<ScheduleResponse>> {
+pub async fn generar_horario(config: Json<RawData>) -> Json<ScheduleResponse> {
     let config = config.into_inner();
     let formated_config = format_json(config);
     // println!("----------FORMATED CONFIG----------: \n{:#?}", formated_config);

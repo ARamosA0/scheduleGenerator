@@ -8,6 +8,13 @@ use std::fmt;
 // ==============================
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ScheduleResponse {
+    pub bestGeneration: Vec<BestGenome>,  
+    pub bestFitness: usize,
+    pub iteration: u64,
+}
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct BestGenome {
     pub id: usize,
     pub startDate: NaiveDateTime,
     pub endDate: NaiveDateTime,

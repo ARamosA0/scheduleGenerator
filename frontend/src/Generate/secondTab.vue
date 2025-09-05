@@ -148,6 +148,7 @@
                 </Card>
                 <div v-else>
                     <p class="mt-3 font-bold text-lg">Progreso general</p>
+                    <span> 0% </span>
                     <ProgressBar
                         :value="processStatus.progrecion"
                         class="mt-3"
@@ -179,6 +180,21 @@
                             </template>
                         </Card>
                     </div>
+                    <div class="mt-5">
+                        <div class="grid grid-cols-2 gap-4">
+                            <Button 
+                            label="Ver Historial" 
+                            @click="router.push({ name: 'historial' })" 
+                            severity="secondary" 
+                            class="w-full"
+                            />
+                            <Button 
+                            label="Ver Horario" 
+                            @click="router.push({ name: 'calendario', params: { id: props.executionResult.scheduleId } })" 
+                            class="w-full"
+                            />
+                        </div>
+                    </div>
                 </div>
             </template>
         </Card>
@@ -188,6 +204,10 @@
 import { ref, computed } from "vue";
 import { Button, Card, InputText, Slider } from "primevue";
 import ProgressBar from "primevue/progressbar";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
 const props = defineProps({
     processName: {
         type: String,
@@ -197,6 +217,10 @@ const props = defineProps({
         type: Object,
         default: null,
     },
+    executionResult: {
+        type: Object,
+        default: null
+    }
 });
 
 const configurationData = ref({

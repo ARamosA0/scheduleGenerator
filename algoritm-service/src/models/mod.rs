@@ -7,3 +7,4 @@ pub mod rule;
 pub mod schedule_model;
 pub mod subject;
 pub mod teacher;
+pub mod algoritm_response;
