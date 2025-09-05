@@ -77,6 +77,15 @@
             </div>
         </template>
         <template #content>
+            <SchoolSchedule
+                :days="days"
+                startHour="08:00"
+                endHour="16:00"
+                :slotMinutes="30"
+                :rowHeight="36"
+                :events="events"
+                :legend="legend"
+            />
             <CalendarView
                 :displayPeriodUom="data.displayPeriodUom"
                 :items="data.items"
@@ -92,7 +101,27 @@ import { getScheduleById } from "../../api/scheduleApi";
 
 import CalendarView from "../common/calendarView.vue";
 
+import SchoolSchedule from "../common/SchoolSchedule.vue";
+
 import { useRouter, useRoute } from "vue-router";
+
+const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'];
+
+const events = [
+  { id: 1, dayIndex: 0, title: 'Matemática', start: '08:00', end: '09:30', room: '101', teacher: 'García', color: '#60a5fa' },
+  { id: 2, dayIndex: 0, title: 'Comunicación', start: '09:00', end: '10:00', room: '102', teacher: 'Pérez', color: '#f59e0b' }, // se superpone
+  { id: 3, dayIndex: 2, title: 'Historia', start: '11:00', end: '12:30', room: '201', teacher: 'Ramos', color: '#34d399' },
+  { id: 4, dayIndex: 4, title: 'Inglés', start: '13:00', end: '14:00', room: '305', teacher: 'Smith', color: '#f472b6' },
+];
+
+const legend = [
+  { label: 'Matemática', color: '#60a5fa' },
+  { label: 'Comunicación', color: '#f59e0b' },
+  { label: 'Historia', color: '#34d399' },
+  { label: 'Inglés', color: '#f472b6' },
+];
+
+
 const router = useRouter();
 const route = useRoute();
 
