@@ -43,6 +43,8 @@ func CreateAssigment(c echo.Context) error {
 	}
 	c.Request().Body = io.NopCloser(bytes.NewReader(body))
 
+	fmt.Println("RAW BODY:", string(body))
+
 	var process model.Process
 	if err := c.Bind(&process); err != nil {
 		fmt.Println("ERROR DE BIND:", err)
@@ -63,6 +65,8 @@ func CreateAssigment(c echo.Context) error {
 	roomsJSON, _ := json.Marshal(process.SelectedData.SelectedRooms)
 	groupsJSON, _ := json.Marshal(process.SelectedData.SelectedGroups)
 	templateJSON, _ := json.Marshal(template)
+
+	fmt.Println("CONFIG", process.ProcessData.Generations)
 
 	data := model.Assignment{
 		Template:    templateJSON,
@@ -126,6 +130,7 @@ func CreateAssigment(c echo.Context) error {
 		fmt.Println("Schedule insertado:", schedule)
 	}
 
+	fmt.Println("SCHEDULE ID", schedule.ID)
 	rustResult.ScheduleId = schedule.ID
 
 	return c.JSON(http.StatusCreated, rustResult)

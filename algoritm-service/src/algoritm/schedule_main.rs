@@ -122,6 +122,7 @@ pub fn execute_process(config: &AlgorithmConfig) -> ScheduleResponse {
             Ok(SimResult::Final(step, _time, _duration, stop_reason)) => {
                 let best = step.result.best_solution;
                 println!("\n--- RESULTADO FINAL ---");
+                println!("{}", config.generations);
                 println!("{}", stop_reason);
                 println!("Generación: {}", step.iteration);
                 println!("Mejor fitness: {}", best.solution.fitness);
@@ -156,7 +157,7 @@ pub fn format_schedule_response(
     let mut response = vec![];
 
     let base_date = get_current_week_dates();
-
+    let mut counter = 0;
     for chromosome in best_genome {
         let subject_name = config
             .subjects
@@ -172,18 +173,29 @@ pub fn format_schedule_response(
             .map(|s| s.name.clone())
             .unwrap_or_else(|| "Desconocido".to_string());
 
+        let teacher_name = config
+            .teachers
+            .iter()
+            .find(|t| t.id == chromosome.teacher_id)
+            // .map(|t| t.last_name.clone())
+            .map(|t| format!("{} {}", t.name, t.last_name))
+            .unwrap_or_else(|| "Desconocido".to_string());
+
         // let day = config
         let format_day = format_day_period(&chromosome, &config.template);
         let (start_date, end_date) = get_period_datetime(&chromosome, &config.template, &base_date);
-        println!("Format DAY:{:?}", format_day);
         // println!("Format PERIOD:{:?}", format_period);
         response.push(BestGenome {
-            id: chromosome.curso_id,
+            id: counter,
+            dayIndex: chromosome.dia,
             startDate: start_date,
             endDate: end_date,
-            title: subject_name,
-            tooltip: room_name,
+            subject: subject_name,
+            room: room_name,
+            teacher: teacher_name,
         });
+
+        counter += 1;
     }
     response
 }

@@ -25,10 +25,12 @@ type ScheduleResponse struct {
 
 type BestGenome struct {
 	ID        uint   `json:"id"`
+	DayIndex  uint   `json:dayIndex`
 	StartDate string `json:"startDate"`
 	EndDate   string `json:"endDate"`
-	Title     string `json:"title"`
-	Tooltip   string `json:"tooltip"`
+	Subject   string `json:"subject"`
+	Room      string `json:"room"`
+	Teachers  string `json:"teacher"`
 }
 
 type BestGenomes []BestGenome

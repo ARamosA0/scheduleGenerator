@@ -16,10 +16,12 @@ pub struct ScheduleResponse {
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct BestGenome {
     pub id: usize,
+    pub dayIndex: usize,
     pub startDate: NaiveDateTime,
     pub endDate: NaiveDateTime,
-    pub title: String,
-    pub tooltip: String,
+    pub subject: String,
+    pub room: String,
+    pub teacher: String,
 }
 
 pub struct AlgoritmInformation {

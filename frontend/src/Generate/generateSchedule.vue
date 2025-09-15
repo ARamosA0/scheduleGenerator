@@ -65,6 +65,7 @@ const runProcessData = ref({
         generations: 0,
         mutation: 0,
         crossOver: 0,
+        selection: 0,
         elitism: 0,
     },
     selectedData: {

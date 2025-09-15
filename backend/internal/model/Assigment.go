@@ -39,7 +39,7 @@ type SelectedData struct {
 type ProcessData struct {
 	ProcessName string  `json:"processName"`
 	Population  int     `json:"population"`
-	Generations int     `json:"generation"`
+	Generations int     `json:"generations"`
 	Mutation    float64 `json:"mutation"`
 	CrossOver   float64 `json:"cross_over"`
 	Selection   float64 `json:"selection"`

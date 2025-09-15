@@ -21,6 +21,9 @@ pub async fn run_schedule() {
 #[post("/generar", format = "json", data = "<config>")]
 pub async fn generar_horario(config: Json<RawData>) -> Json<ScheduleResponse> {
     let config = config.into_inner();
+    println!("CONFIG: --------------------------------");
+    println!("{:?}", config);
+    println!("CONFIG: --------------------------------");
     let formated_config = format_json(config);
     // println!("----------FORMATED CONFIG----------: \n{:#?}", formated_config);
     let result = execute_process(&formated_config);

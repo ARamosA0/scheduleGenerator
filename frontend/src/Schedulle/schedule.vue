@@ -12,8 +12,8 @@
         </div>
         <div class="flex flex-row col-span-4">
             <Button label="Exportar" class="ml-3" />
-            <Button label="Imprimir" class="ml-3" />
-            <Button label="Regenerar" class="ml-3" />
+            <!-- <Button label="Imprimir" class="ml-3" />
+            <Button label="Regenerar" class="ml-3" /> -->
         </div>
     </div>
 
@@ -56,14 +56,14 @@
         </Card>
     </div>
 
-    <div>
+    <!-- <div>
         <Select
             v-model="data.displayPeriodUom"
             :options="periodsOptions"
             optionLabel="name"
             optionValue="value"
         />
-    </div>
+    </div> -->
 
     <Card class="mb-50">
         <template #title>
@@ -78,18 +78,19 @@
         </template>
         <template #content>
             <SchoolSchedule
+                v-if="data.items"
                 :days="days"
-                startHour="08:00"
-                endHour="16:00"
+                startHour="07:00"
+                endHour="22:00"
                 :slotMinutes="30"
-                :rowHeight="36"
-                :events="events"
+                :rowHeight="45"
+                :events="data.items"
                 :legend="legend"
             />
-            <CalendarView
+            <!-- <CalendarView
                 :displayPeriodUom="data.displayPeriodUom"
                 :items="data.items"
-            />
+            /> -->
         </template>
     </Card>
 </template>
@@ -105,13 +106,13 @@ import SchoolSchedule from "../common/SchoolSchedule.vue";
 
 import { useRouter, useRoute } from "vue-router";
 
-const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'];
+const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado'];
 
 const events = [
-  { id: 1, dayIndex: 0, title: 'Matemática', start: '08:00', end: '09:30', room: '101', teacher: 'García', color: '#60a5fa' },
-  { id: 2, dayIndex: 0, title: 'Comunicación', start: '09:00', end: '10:00', room: '102', teacher: 'Pérez', color: '#f59e0b' }, // se superpone
-  { id: 3, dayIndex: 2, title: 'Historia', start: '11:00', end: '12:30', room: '201', teacher: 'Ramos', color: '#34d399' },
-  { id: 4, dayIndex: 4, title: 'Inglés', start: '13:00', end: '14:00', room: '305', teacher: 'Smith', color: '#f472b6' },
+  { id: 1, dayIndex: 0, title: 'Matemática', startDate: '08:00', endDate: '09:30', room: '101', teacher: 'García', color: '#60a5fa' },
+  { id: 2, dayIndex: 0, title: 'Comunicación', startDate: '09:00', endDate: '10:00', room: '102', teacher: 'Pérez', color: '#f59e0b' }, // se superpone
+  { id: 3, dayIndex: 2, title: 'Historia', startDate: '11:00', endDate: '12:30', room: '201', teacher: 'Ramos', color: '#34d399' },
+  { id: 4, dayIndex: 4, title: 'Inglés', startDate: '13:00', endDate: '14:00', room: '305', teacher: 'Smith', color: '#f472b6' },
 ];
 
 const legend = [
@@ -150,7 +151,7 @@ const getSchedule = async () => {
     console.log("ITEMS", response.schedule_response);
 };
 
-onMounted(() => {
-    getSchedule();
+onMounted( async() => {
+    await getSchedule();
 });
 </script>
