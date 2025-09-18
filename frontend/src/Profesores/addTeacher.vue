@@ -45,11 +45,15 @@ Profesor"
             />
         </div>
         <div class="flex flex-col mt-3">
-            <label for="name" class="font-semibold w-24">Especialidad</label>
-            <InputText
+            <label for="name" class="font-semibold">Especialidad Requerida</label>
+
+            <Select
                 v-model="data.teacher.specialty"
-                class="flex-auto"
-                autocomplete="off"
+                :options="specialtis"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Seleccionar especialidad"
+                class="w-full"
             />
         </div>
         <div class="grid grid-cols-2 gap-3 mt-5">
@@ -126,7 +130,7 @@ Profesor"
 </template>
 <script setup lang="ts">
 import { ref, watch, toRef } from "vue";
-import { Dialog, Button, InputText, Checkbox } from "primevue";
+import { Dialog, Button, InputText, Checkbox, Select } from "primevue";
 
 const props = defineProps({
     teacher: {
@@ -138,6 +142,16 @@ const props = defineProps({
         default: null,
     },
 });
+
+const specialtis = ref([
+    { label: "Ciencias Exactas", value: 1 },
+    { label: "Ciencias Naturales", value: 2 },
+    { label: "Ingenieria y Tecnologia", value: 3 },
+    { label: "Ciencias Sociales", value: 4 },
+    { label: "Lengua y Humanidades", value: 5 },
+    { label: "Economia y Administracion", value: 6 },
+    { label: "Salud", value: 7 },
+]);
 
 const emit = defineEmits(["update:visible", "save", "update"]);
 

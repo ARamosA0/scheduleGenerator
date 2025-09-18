@@ -22,7 +22,6 @@ pub fn format_json(data: RawData) -> AlgorithmConfig {
     let num_days = count_days(&formated_days_range);
     let num_periods = periods_definition(&formated_days_range);
 
-    println!("FORMATED_DAYS_RANGE:{:?}", formated_days_range);
 
     AlgorithmConfig {
         num_subjects,
@@ -111,7 +110,6 @@ pub fn format_rooms(data: &Value) -> Vec<Room> {
 }
 
 pub fn format_groups(data: &Value) -> Vec<Group> {
-    print!("GROUPS RAW VALUE: {}", data);
     match serde_json::from_value::<Vec<Group>>(data.clone()) {
         Ok(group) => group,
         Err(e) => {

@@ -103,7 +103,8 @@ pub fn execute_process(config: &AlgorithmConfig) -> ScheduleResponse {
             .build(),
     )
     .until(or(
-        FitnessLimit::new(100),
+        // FitnessLimit::new(100),
+        TimeLimit::new(Duration::minutes(60)), 
         GenerationLimit::new(config.generations),
     ))
     .build();

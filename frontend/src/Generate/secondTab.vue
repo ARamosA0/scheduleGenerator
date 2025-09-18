@@ -250,8 +250,7 @@ const animateProgress = (target: any) => {
     } else {
       clearInterval(interval)
     }
-  }, 20) 
-}
+  }, 500)}
 
 watch(() => props.executionResult, (newVal) => {
     processStatus.value.progrecion = 100

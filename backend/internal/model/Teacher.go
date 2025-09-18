@@ -14,7 +14,7 @@ type Teacher struct {
 	LastName      string        `json:"lastName"`
 	Email         string        `json:"email"`
 	Phone         string        `json:"phone"`
-	Specialty     string        `json:"specialty"`
+	Specialty     int           `json:"specialty"`
 	AvailableDays AvailableDays `gorm:"type:jsonb" json:"available_days"`
 	// AvailableTimes TimesWrapper `gorm:"type:jsonb" json:"available_times"`
 }

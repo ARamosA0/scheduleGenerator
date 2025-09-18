@@ -17,4 +17,6 @@ pub struct Subject {
     pub requirements: String,
     pub description: String,
     pub required_room_type: usize,
+    #[serde(rename = "specialty")]
+    pub speciality: usize,
 }

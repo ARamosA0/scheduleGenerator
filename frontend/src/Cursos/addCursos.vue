@@ -92,6 +92,18 @@
                 class="w-full"
             />
         </div>
+        <div class="flex flex-col mt-3">
+            <label for="name" class="font-semibold">Especialidad Requerida</label>
+
+            <Select
+                v-model="data.course.specialty"
+                :options="specialtis"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Seleccionar especialidad"
+                class="w-full"
+            />
+        </div>
         <div class="flex justify-end gap-2 mt-5">
             <Button
                 type="button"
@@ -142,6 +154,7 @@ const data = ref({
         requirements: "",
         description: "",
         required_room_type: 1,
+        specialty: 1
     },
 });
 const courseRef = toRef(props, "course");
@@ -158,6 +171,16 @@ const rooms = ref([
     { label: "Laboratorio", value: RoomTypes.Laboratory },
     { label: "Auditorio", value: RoomTypes.Auditorium },
     { label: "Oficina", value: RoomTypes.Office },
+]);
+
+const specialtis = ref([
+    { label: "Ciencias Exactas", value: 1 },
+    { label: "Ciencias Naturales", value: 2 },
+    { label: "Ingenieria y Tecnologia", value: 3 },
+    { label: "Ciencias Sociales", value: 4 },
+    { label: "Lengua y Humanidades", value: 5 },
+    { label: "Economia y Administracion", value: 6 },
+    { label: "Salud", value: 7 },
 ]);
 
 const closeDialog = () => {

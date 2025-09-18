@@ -2,7 +2,9 @@ package services
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"backend.com/backend/internal/db"
@@ -146,7 +148,13 @@ func UploadDataFromExcel(c echo.Context) error {
 			case "phone":
 				t.Phone = value
 			case "specialty":
-				t.Specialty = value
+				// t.Specialty = value
+				specialty, err := strconv.Atoi(value)
+				if err != nil {
+					log.Printf("Error al convertir '%s' a int para 'credits': %v", value, err)
+					specialty = 0
+				}
+				t.Specialty = specialty
 			case "available_days":
 				var availableDays model.AvailableDays
 

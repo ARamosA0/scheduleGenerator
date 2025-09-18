@@ -45,10 +45,25 @@ fn create_room_by_subject(subjects: &Vec<Subject>, subject_id: usize) -> Option<
 
 }
 
-fn create_teacher_by_subject(subject: &Vec<Subject>) -> Option<usize> {
-    
-    Some(0)
-}
+// fn create_teacher_by_subject(teachers: &Vec<Teacher>, subjects: &Vec<Subject>, subject_id: usize) -> Option<usize> {
+//     if let Some(subject) = subjects.iter().find(|s| s.id == subject_id) {
+//         let mut candidates: Vec<&Teacher> = teachers
+//             .iter()
+//             .filter(|t| t.speciality == subject.speciality)
+//             .collect();
+
+//         if candidates.is_empty() {
+//             return None;
+//         }
+
+//         let mut rng = rand::thread_rng();
+//         candidates
+//             .choose(&mut rng)
+//             .map(|teacher| teacher.id)
+//     } else {
+//         None
+//     }
+// }
 
 // impl MutationOp<HorarioGenome> for HorarioMutator {
 //     fn mutate<HorarioGenome>(&self, genome: &mut HorarioGenome, rng: &mut R) -> usize

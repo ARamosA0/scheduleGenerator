@@ -136,6 +136,10 @@ const columns = ref([
         name: "Aula",
         value: "required_room_type",
     },
+    {
+        name: "Especialidad",
+        value: "specialty",
+    },
 ]);
 
 const getCourse = async () => {
