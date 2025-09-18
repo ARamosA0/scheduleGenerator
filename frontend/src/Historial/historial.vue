@@ -67,7 +67,7 @@
             </DataTable>
         </template>
     </Card>
-    <div class="grid grid-cols-3 gap-3 mt-3">
+    <!-- <div class="grid grid-cols-3 gap-3 mt-3">
         <Card>
             <template #title>
                 <p class="text-large">Estadisticas Generales</p>
@@ -75,19 +75,19 @@
             <template #content>
                 <div>
                     <span>Total Procesos: </span>
-                    <span>5</span>
+                    <span v-if="!loading">{{ data.length }}</span>
                 </div>
                 <div>
                     <span>Completados: </span>
-                    <span>3</span>
+                    <span v-if="!loading">{{ data.length }}</span>
                 </div>
                 <div>
                     <span>En Progreso: </span>
-                    <span>1</span>
+                    <span v-if="!loading">0</span>
                 </div>
                 <div>
                     <span>Fallidos: </span>
-                    <span>1</span>
+                    <span v-if="!loading">0</span>
                 </div>
             </template>
         </Card>
@@ -125,7 +125,7 @@
                 </div>
             </template>
         </Card>
-    </div>
+    </div> -->
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
@@ -138,15 +138,6 @@ const data = ref([]);
 
 const loading = ref(false);
 
-// watch(
-//     () => saved.value,
-//     async (newVal: any) => {
-//         console.log("newVAL", newVal);
-//         await getAssigments();
-//     },
-//     { immediate: true },
-// );
-
 onMounted(async () => {
     await getAssigments();
 });
@@ -154,12 +145,12 @@ onMounted(async () => {
 const getAssigments = async () => {
     const response = await getAllAssigment();
     data.value = response;
+    // loading.value = true
 };
 
 const delAssigment = async (data: object) => {
-    loading.value = true;
     await deleteAssigment(data);
     await getAllAssigment();
-    loading.value = false;
+    loading.value = true;
 };
 </script>

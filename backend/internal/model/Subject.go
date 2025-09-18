@@ -14,4 +14,5 @@ type Subject struct {
 	Description      string  `json:"description"`
 	RequiredRoomType int     `json:"required_room_type"`
 	Groups           []Group `gorm:"many2many:group_subjects;"`
+	Specialty        int     `json:"specialty"`
 }

@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{NaiveDate, NaiveDateTime};
 use genevo::{operator::prelude::*, prelude::*, random::Rng, types::fmt::Display};
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -8,11 +8,20 @@ use std::fmt;
 // ==============================
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ScheduleResponse {
+    pub bestGeneration: Vec<BestGenome>,  
+    pub bestFitness: usize,
+    pub iteration: u64,
+}
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct BestGenome {
     pub id: usize,
-    pub startDate: NaiveDate,
-    pub endDate: NaiveDate,
-    pub title: String,
-    pub tooltip: String,
+    pub dayIndex: usize,
+    pub startDate: NaiveDateTime,
+    pub endDate: NaiveDateTime,
+    pub subject: String,
+    pub room: String,
+    pub teacher: String,
 }
 
 pub struct AlgoritmInformation {

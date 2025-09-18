@@ -1,5 +1,6 @@
 use crate::models::{
     algoritm_config::{AlgorithmConfig, DaySchedule, RawData},
+    group::Group,
     room::Room,
     subject::Subject,
     teacher::Teacher,
@@ -11,17 +12,22 @@ pub fn format_json(data: RawData) -> AlgorithmConfig {
     let formated_techers = format_teachers(&data.teachers);
     let formated_subjects = format_subjects(&data.subjects);
     let formated_rooms = format_rooms(&data.rooms);
+    let formated_groups = format_groups(&data.groups);
+
 
     let num_subjects = arrays_data_counter(&data.subjects);
     let num_rooms = arrays_data_counter(&data.rooms);
     let num_teachers = arrays_data_counter(&data.teachers);
+    let num_groups = arrays_data_counter(&data.groups);
     let num_days = count_days(&formated_days_range);
     let num_periods = periods_definition(&formated_days_range);
+
 
     AlgorithmConfig {
         num_subjects,
         num_rooms,
         num_teachers,
+        num_groups,
         num_days,
         num_periods,
 
@@ -36,6 +42,7 @@ pub fn format_json(data: RawData) -> AlgorithmConfig {
         subjects: formated_subjects,
         teachers: formated_techers,
         rooms: formated_rooms,
+        groups: formated_groups,
     }
 }
 
@@ -46,7 +53,6 @@ pub fn count_days(data: &Vec<DaySchedule>) -> usize {
 pub fn periods_definition(data: &Vec<DaySchedule>) -> usize {
     let mut all_periods = Vec::new();
 
-    println!("PERIODS:{:?}", data);
 
     for day in data {
         all_periods.push(day.periods.len());
@@ -60,10 +66,8 @@ pub fn periods_definition(data: &Vec<DaySchedule>) -> usize {
 }
 
 pub fn format_days_range(data: &Value) -> Vec<DaySchedule> {
-    println!("FORMATED_DAYS:{:?}", data);
 
     if let Some(Value::String(days_range_str)) = data.get("daysRange") {
-        println!("days_range_str:{:?}", days_range_str);
         let result: Result<Vec<DaySchedule>, _> = serde_json::from_str(days_range_str);
         match result {
             Ok(days) => days,
@@ -98,6 +102,16 @@ pub fn format_teachers(data: &Value) -> Vec<Teacher> {
 pub fn format_rooms(data: &Value) -> Vec<Room> {
     match serde_json::from_value::<Vec<Room>>(data.clone()) {
         Ok(room) => room,
+        Err(e) => {
+            eprintln!("Error al deserializar rooms: {}", e);
+            vec![]
+        }
+    }
+}
+
+pub fn format_groups(data: &Value) -> Vec<Group> {
+    match serde_json::from_value::<Vec<Group>>(data.clone()) {
+        Ok(group) => group,
         Err(e) => {
             eprintln!("Error al deserializar rooms: {}", e);
             vec![]

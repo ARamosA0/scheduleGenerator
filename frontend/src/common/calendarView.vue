@@ -1,4 +1,5 @@
 <template>
+    {{ props.items }}
     <div id="app">
         <CalendarView
             :show-date="data.showDate"
@@ -11,7 +12,7 @@
                 <CalendarViewHeader
                     slot="header"
                     :header-props="headerProps"
-                    @input="data.showDate"
+                    @input="setShowDate"
                 />
             </template>
         </CalendarView>
@@ -54,17 +55,14 @@ watch(
 );
 
 const fromDateString = (dateStr) => {
-    // Si contiene hora
     console.log("dataStr", dateStr);
     if (dateStr.includes(" ")) {
-        // Ej: "2025-07-31 14:30"
         const [datePart, timePart] = dateStr.split(" ");
         const [year, month, day] = datePart.split("-").map(Number);
         const [hour, minute] = timePart.split(":").map(Number);
 
         return new Date(year, month - 1, day, hour, minute);
     } else {
-        // Solo fecha: "2025-07-31"
         const [year, month, day] = dateStr.split("-").map(Number);
         return new Date(year, month - 1, day, 0, 0); // Hora 00:00
     }
@@ -77,7 +75,7 @@ const thisMonth = (d, h, m) => {
 
 const data = ref({
     showDate: thisMonth(1),
-    startingDayOfWeek: 0,
+    startingDayOfWeek: 1,
     displayPeriodUom: props.displayPeriodUom,
     items: [
         // {
@@ -152,8 +150,9 @@ const data = ref({
 });
 
 const setShowDate = (d) => {
-    showDate.value = d;
+    data.value.showDate = d;
 };
+
 </script>
 <style>
 #app {

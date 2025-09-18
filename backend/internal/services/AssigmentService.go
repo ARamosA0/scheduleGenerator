@@ -41,8 +41,9 @@ func CreateAssigment(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "No se pudo leer el cuerpo"})
 	}
-	fmt.Println("CUERPO DEL REQUEST:", string(body))
 	c.Request().Body = io.NopCloser(bytes.NewReader(body))
+
+	fmt.Println("RAW BODY:", string(body))
 
 	var process model.Process
 	if err := c.Bind(&process); err != nil {
@@ -59,19 +60,20 @@ func CreateAssigment(c echo.Context) error {
 		})
 	}
 
-	fmt.Printf("TEMPLATE ------------------ %+v\n", template)
-	fmt.Printf("PROCESO %+v\n", process)
-
 	subjectsJSON, _ := json.Marshal(process.SelectedData.SelectedSubjects)
 	teachersJSON, _ := json.Marshal(process.SelectedData.SelectedTeachers)
 	roomsJSON, _ := json.Marshal(process.SelectedData.SelectedRooms)
+	groupsJSON, _ := json.Marshal(process.SelectedData.SelectedGroups)
 	templateJSON, _ := json.Marshal(template)
+
+	fmt.Println("CONFIG", process.ProcessData.Generations)
 
 	data := model.Assignment{
 		Template:    templateJSON,
 		Subjects:    subjectsJSON,
 		Teachers:    teachersJSON,
 		Rooms:       roomsJSON,
+		Groups:      groupsJSON,
 		ProcessName: process.ProcessData.ProcessName,
 		Population:  process.ProcessData.Population,
 		Generations: process.ProcessData.Generations,
@@ -92,6 +94,8 @@ func CreateAssigment(c echo.Context) error {
 		return err
 	}
 
+	fmt.Println("JSON DATA PARA RUST:\n", string(jsonData))
+
 	// Enviar a Rust
 	resp, err := http.Post("http://schedulegenerator-algoritm-service-1:8088/generar", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -105,22 +109,20 @@ func CreateAssigment(c echo.Context) error {
 		fmt.Println("ERROR LEYENDO RESPUESTA:", bodyErr)
 		return bodyErr
 	}
-	fmt.Println("RUST: ", string(body))
 
-	var rustSchedules []model.ScheduleResponse
-	err = json.Unmarshal(body, &rustSchedules)
+	var rustResult model.ScheduleResponse
+	err = json.Unmarshal(body, &rustResult)
 	if err != nil {
 		fmt.Println("ERROR DECODIFICANDO JSON DE RUST:", err)
 		return err
 	}
 
-	fmt.Println("RUST SCHEDULES: ", rustSchedules)
+	fmt.Println("RUST SCHEDULE", rustResult)
+
 	schedule := model.Schedule{
 		Assignment_id:     uint(data.ID),
-		ScheduleResponses: model.ScheduleResponses(rustSchedules),
+		ScheduleResponses: rustResult.Bestgeneration,
 	}
-
-	fmt.Println("MODELO SCHEDULE", schedule)
 
 	if err := db.DB.Create(&schedule).Error; err != nil {
 		fmt.Println("Error insertando en DB:", err)
@@ -128,39 +130,10 @@ func CreateAssigment(c echo.Context) error {
 		fmt.Println("Schedule insertado:", schedule)
 	}
 
-	// for _, rustData := range rustSchedules {
-	// 	fmt.Println("DATA EN FOR: ", rustData)
-	// 	fmt.Println("ASSIGMENT MODEL: ", data.ID)
-	// 	start, err := time.Parse("2006-01-02", rustData.StartDate)
-	// 	if err != nil {
-	// 		fmt.Println("Error parseando StartedDate:", err)
-	// 		continue
-	// 	}
+	fmt.Println("SCHEDULE ID", schedule.ID)
+	rustResult.ScheduleId = schedule.ID
 
-	// 	end, err := time.Parse("2006-01-02", rustData.EndDate)
-	// 	if err != nil {
-	// 		fmt.Println("Error parseando EndDate:", err)
-	// 		continue
-	// 	}
-
-	// 	schedule := model.Schedule{
-	// 		Assignment_id: uint(data.ID),
-	// 		StartDate:     start,
-	// 		EndDate:       end,
-	// 		Title:         rustData.Title,
-	// 		Tooltip:       rustData.Tooltip,
-	// 	}
-
-	// 	fmt.Println("MODELO SCHEDULE", schedule)
-
-	// 	if err := db.DB.Create(&schedule).Error; err != nil {
-	// 		fmt.Println("Error insertando en DB:", err)
-	// 	} else {
-	// 		fmt.Println("Schedule insertado:", schedule)
-	// 	}
-	// }
-
-	return c.JSON(http.StatusCreated, data)
+	return c.JSON(http.StatusCreated, rustResult)
 }
 
 func UpdateAssigment(c echo.Context) error {

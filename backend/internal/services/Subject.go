@@ -72,6 +72,7 @@ func UpdateSubject(c echo.Context) error {
 	subject.Career = input.Career
 	subject.Requirements = input.Requirements
 	subject.RequiredRoomType = input.RequiredRoomType
+	subject.Specialty = input.Specialty
 
 	if err := db.DB.Save(&subject).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "No se pudo actualizar"})
@@ -174,7 +175,16 @@ func UploadSubjectFromExcel(c echo.Context) error {
 					roomType = 0
 				}
 				s.RequiredRoomType = roomType
+			case "specialty":
+				// t.Specialty = value
+				specialty, err := strconv.Atoi(value)
+				if err != nil {
+					log.Printf("Error al convertir '%s' a int para 'credits': %v", value, err)
+					specialty = 0
+				}
+				s.Specialty = specialty
 			}
+
 		}
 
 		if err := db.DB.Create(&s).Error; err != nil {

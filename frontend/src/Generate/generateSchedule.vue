@@ -26,12 +26,13 @@
                     :cursos="cursos"
                     :salones="salones"
                     :templates="templates"
+                    :grupos="grupos"
                     @change-tab="changeTab"
                     @tab1Data="tab1Data"
                 />
             </TabPanel>
             <TabPanel value="1">
-                <secondTab @start-process="runProcess" />
+                <secondTab @start-process="runProcess" :execution-result="executionResult" />
             </TabPanel>
         </TabPanels>
     </Tabs>
@@ -47,7 +48,10 @@ import { getAllCourses } from "../../api/cursosApi";
 import { getAllRooms } from "../../api/salonesApi";
 import { getAllTeachers } from "../../api/profesoresApi";
 import { getAllTemplates } from "../../api/templateApi";
+import { getAllGroups } from "../../api/grupoApi";
 import { createAssigment } from "../../api/assigmentApi";
+
+const executionResult = ref()
 
 const data = ref({
     start: false,
@@ -61,6 +65,7 @@ const runProcessData = ref({
         generations: 0,
         mutation: 0,
         crossOver: 0,
+        selection: 0,
         elitism: 0,
     },
     selectedData: {
@@ -80,6 +85,7 @@ const profesores = ref();
 const cursos = ref();
 const salones = ref();
 const templates = ref();
+const grupos = ref();
 
 const changeTab = (value: any) => (data.value.tab = value);
 
@@ -88,14 +94,18 @@ onMounted(async () => {
     cursos.value = await getAllCourses();
     salones.value = await getAllRooms();
     templates.value = await getAllTemplates();
+    grupos.value = await getAllGroups();
 
-    console.log("TEMPLATES", templates.value);
+    console.log("GROUPS", grupos.value);
 });
 
 const runProcess = async (value: any) => {
     console.log("TAB2VALUE", value);
     runProcessData.value.processData = value;
     console.log("RUNPROCESS", runProcessData.value);
-    await createAssigment(runProcessData.value);
+    const result = await createAssigment(runProcessData.value);
+    console.log('RESULT EXECUTION', result.data)
+    executionResult.value = result.data
+    console.log("EXECUTION RESULT", executionResult.value)
 };
 </script>

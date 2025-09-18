@@ -20,8 +20,67 @@
                 severity="contrast"
             />
         </div>
-        {{ props.template }}
-        <Card v-for="(tr, key) in timeRange" :key="key" class="mt-4">
+        <Card class="mt-4">
+            <template #header>
+                <Button icon="pi pi-trash" severity="secondary" @click="" />
+            </template>
+            <template #content>
+                <div class="flex flex-col mt-3">
+                    <label for="name" class="font-semibold">Dias</label>
+                    <MultiSelect
+                        id="day"
+                        :options="days"
+                        v-model="timeRanges.day"
+                        optionLabel="label"
+                        optionValue="value"
+                        placeholder="Seleccionar dia"
+                        class="w-full"
+                    />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="flex flex-col gap">
+                        <label for="name" class="font-semibold"
+                            >Hora de Inicio</label
+                        >
+                        <DatePicker
+                            id="datepicker-timeonly"
+                            timeOnly
+                            fluid
+                            v-model="timeRanges.startHour"
+                            autocomplete="off"
+                        />
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="name" class="font-semibold"
+                            >Hora de Fin</label
+                        >
+                        <DatePicker
+                            id="datepicker-timeonly"
+                            timeOnly
+                            fluid
+                            v-model="timeRanges.endHour"
+                            autocomplete="off"
+                            variant="outlined"
+                        />
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="name" class="font-semibold"
+                            >Periodo entre horas en minutos</label
+                        >
+                        <Select
+                            id="period"
+                            :options="periods"
+                            v-model="timeRanges.period"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Seleccionar periodo de horas"
+                            class="w-full"
+                        />
+                    </div>
+                </div>
+            </template>
+        </Card>
+        <!-- <Card v-for="(tr, key) in timeRange" :key="key" class="mt-4">
             <template #header>
                 <Button icon="pi pi-trash" severity="secondary" @click="" />
             </template>
@@ -80,7 +139,7 @@
                     </div>
                 </div>
             </template>
-        </Card>
+        </Card> -->
         <div class="flex justify-end gap-2 mt-5">
             <Button
                 type="button"
@@ -94,7 +153,10 @@
 </template>
 <script setup lang="ts">
 import { ref, watch, toRef } from "vue";
-import { Dialog, Button, InputText, Select, Card, DatePicker } from "primevue";
+import { Dialog, Button, InputText, Select, Card, DatePicker, MultiSelect } from "primevue";
+import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 interface TimeRange {
     day: string;
@@ -115,13 +177,19 @@ const props = defineProps({
     },
 });
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const TIMEZONE = "America/Lima"; 
+
 const days = [
-    { label: "Lunes", value: "Lunes" },
-    { label: "Martes", value: "Martes" },
-    { label: "Miércoles", value: "Miercoles" },
-    { label: "Jueves", value: "Jueves" },
-    { label: "Viernes", value: "Viernes" },
-    { label: "Sabado", value: "Sabado" },
+    { label: "Lunes", value: 1 },
+    { label: "Martes", value: 2 },
+    { label: "Miércoles", value: 3 },
+    { label: "Jueves", value: 4 },
+    { label: "Viernes", value: 5 },
+    { label: "Sabado", value: 6 },
+    { label: "Domingo", value: 7 },
 ];
 
 const periods = [
@@ -138,6 +206,14 @@ const template = ref({
     daysRange: "",
 });
 
+const timeRanges = ref({
+    day:[],
+    startHour: dayjs.tz("2000-01-01 08:00", TIMEZONE).toDate(),
+    endHour: dayjs.tz("2000-01-01 10:00", TIMEZONE).toDate(),
+    period: 0,
+    status: true,
+})
+
 const timeRange = ref<TimeRange[]>([
     {
         day: "",
@@ -153,11 +229,16 @@ const courseRef = toRef(props, "template");
 watch(courseRef, (newValue: any) => {
     template.value = newValue;
     const parsedDates = newValue.daysRangeParsed.map(
+        
         (item: object, key: any) => {
+            const start = new Date(item.startHour);
+            const end = new Date(item.endHour);
             return {
                 ...item,
-                startHour: new Date(item.startHour),
-                endHour: new Date(item.endHour),
+                startHour: start.toLocaleString("en-US", { timeZone: "America/Lima" }), 
+                endHour: end.toLocaleString("en-US", { timeZone: "America/Lima" }),
+                // startHour: new Date(item.startHour),
+                // endHour: new Date(item.endHour),
             };
         },
     );
@@ -179,29 +260,32 @@ const closeDialog = () => {
     emit("update:visible", false);
 };
 
+const buildJson = (timeRanges: any) : string => {
+    console.log('TIMERANGES', timeRanges)
+    const tr = timeRanges.day.map((d: any) => {
+        return {
+            day: d,
+            startHour: dayjs(timeRanges.startHour).tz("America/Lima", true).format("YYYY-MM-DDTHH:mm:ssZ"), 
+            endHour: dayjs(timeRanges.endHour).tz("America/Lima", true).format("YYYY-MM-DDTHH:mm:ssZ"),
+            period: timeRanges.period,
+            status: timeRanges.status
+        }
+    });
+    return JSON.stringify(tr)
+}
+
 const saveTemplate = () => {
     console.log("props.template", props.template);
-    // if (props.template !== null) {
-    //     console.log("UPDATE");
-    //     emit("update:visible", false);
-    //     template.value.timeRange = timeRange.value;
-    //     emit("update", template.value.timeRange);
-    // } else {
-    //     emit("update:visible", false);
-    //     template.value.timeRange = timeRange.value;
-    //     emit("save", template.value.timeRange);
-    // }
-    emit("update:visible", false);
-    template.value.daysRange = JSON.stringify(timeRange.value);
-    emit("save", template.value);
-    console.log("TIME RANGE", template.value);
-    // data.value.course.code = "";
-    // data.value.course.name = "";
-    // data.value.course.credits = 0;
-    // data.value.course.hours = 0;
-    // data.value.course.semester = 0;
-    // data.value.course.career = "";
-    // data.value.course.requirements = "";
-    // data.value.course.description = "";
+    if (props.template !== null) {
+        emit("update:visible", false);
+        template.value.daysRange = JSON.stringify(timeRange.value);
+        // emit("update", template.value);
+    } else {
+        const json = buildJson(timeRanges.value)
+        console.log("TIMERANGES ADD", json)
+        emit("update:visible", false);
+        template.value.daysRange = json;
+        emit("save", template.value);
+    }
 };
 </script>

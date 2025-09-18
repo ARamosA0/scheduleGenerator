@@ -13,9 +13,9 @@ import (
 )
 
 func GetAllGroups(c echo.Context) error {
-	var group []model.Group
+	var groups []model.Group
 
-	if err := db.DB.Find(&group).Error; err != nil {
+	if err := db.DB.Preload("Subjects").Find(&groups).Error; err != nil {
 		println(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error":   "Error al obtener salas",
@@ -23,7 +23,24 @@ func GetAllGroups(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, group)
+	var response []model.GroupInput
+
+	for _, group := range groups {
+		subjectIDs := make([]uint, len(group.Subjects))
+		fmt.Println("SUBJECTIDS", subjectIDs)
+		for i, subject := range group.Subjects {
+			subjectIDs[i] = subject.ID
+		}
+
+		response = append(response, model.GroupInput{
+			ID:         group.ID,
+			Name:       group.Name,
+			Size:       group.Size,
+			SubjectIDs: subjectIDs,
+		})
+	}
+
+	return c.JSON(http.StatusOK, response)
 }
 
 func GetGroup(c echo.Context) error {
@@ -37,30 +54,41 @@ func GetGroup(c echo.Context) error {
 }
 
 func CreateGroup(c echo.Context) error {
-	var g model.Group
-	if err := c.Bind(&g); err != nil {
+	var gi model.GroupInput
+	if err := c.Bind(&gi); err != nil {
 		fmt.Println("GROUP ERROR", err)
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "JSON inválido"})
 	}
 
-	fmt.Println("GROUP CREATE", g)
-
-	if g.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "El campo 'name' es obligatorio"})
+	group := model.Group{
+		Name: gi.Name,
+		Size: gi.Size,
 	}
 
-	if err := db.DB.Create(&g).Error; err != nil {
+	var subjects []model.Subject
+
+	fmt.Println("GROUP CREATE", group)
+
+	if len(gi.SubjectIDs) > 0 {
+		if err := db.DB.Find(&subjects, gi.SubjectIDs).Error; err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error al buscar las materias"})
+		}
+	}
+
+	group.Subjects = subjects
+
+	if err := db.DB.Create(&group).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error al guardar el curso"})
 	}
 
-	return c.JSON(http.StatusCreated, g)
+	return c.JSON(http.StatusCreated, group)
 }
 
 func UpdateGroup(c echo.Context) error {
 	id := c.Param("id")
 	var group model.Group
 	if err := db.DB.First(&group, id).Error; err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Profesor no encontrado"})
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "GRupo no encontrado"})
 	}
 
 	var input model.Group
@@ -70,6 +98,7 @@ func UpdateGroup(c echo.Context) error {
 
 	group.Name = input.Name
 	group.Size = input.Size
+	// group.Subjects = input.Subjects
 
 	if err := db.DB.Save(&group).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "No se pudo actualizar"})

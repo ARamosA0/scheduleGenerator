@@ -15,6 +15,6 @@ pub struct Teacher {
     pub email: String,
     pub phone: String,
     #[serde(rename = "specialty")]
-    pub speciality: String,
+    pub speciality: usize,
     pub available_days: Vec<String>,
 }
