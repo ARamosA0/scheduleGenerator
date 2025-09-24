@@ -51,10 +51,11 @@ pub fn execute_process(config: &AlgorithmConfig) -> ScheduleResponse {
     let subjects: &Vec<Subject> = &config.subjects;
     let group: &Vec<Group> = &config.groups;
 
-    let fitness_calc = FitnessCalc {
-        subject: subjects.clone(),
-        param: &config,
-    };
+    // let fitness_calc = FitnessCalc {
+    //     subject: subjects.clone(),
+    //     config: &config,
+    // };
+    let fitness_calc = FitnessCalc::from_vec(subjects, config);
 
     let horario_builder = HorarioBuilder {
         subject: subjects.clone(),
@@ -78,10 +79,10 @@ pub fn execute_process(config: &AlgorithmConfig) -> ScheduleResponse {
             .with_mutation(RandomValueMutator::new(
                 config.mutation,
                 ClaseProgramada {
-                    group_id: 0,
-                    curso_id: 0,
-                    salon_id: 0,
-                    teacher_id: 0,
+                    group_id: 1,
+                    curso_id: 1,
+                    salon_id: 1,
+                    teacher_id: 1,
                     dia: 0,
                     bloque: 0,
                 },
@@ -155,11 +156,13 @@ pub fn format_schedule_response(
     config: &AlgorithmConfig,
 ) -> Vec<BestGenome> {
     println!("BEST GENOME:{:?}", best_genome);
+    println!("SUBJECT:{:?}", config.subjects);
     let mut response = vec![];
 
     let base_date = get_current_week_dates();
     let mut counter = 0;
     for chromosome in best_genome {
+        println!("CURSO ID:{:?}", chromosome.curso_id);
         let subject_name = config
             .subjects
             .iter()

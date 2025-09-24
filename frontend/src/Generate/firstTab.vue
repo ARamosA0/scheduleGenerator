@@ -184,7 +184,7 @@
     </Card>
 </template>
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch, toRaw } from "vue";
 import { Button, Card, Select, Checkbox } from "primevue";
 import itemSelect from "../common/itemSelect.vue";
 
@@ -236,8 +236,23 @@ const onToggleGroup = (item: any) => {
     } else if (!item.status && index !== -1) {
         selectedData.value.selectedGroups.splice(index, 1);
     }
-    console.log('GROUP SELECTED', selectedData.value.selectedGroups)
 };
+
+watch(() => selectedData.value.selectedGroups, (newValue: any) => {
+    console.log('GROUP SELECTED', newValue)
+    if (newValue !== undefined && newValue !== null){
+        const rawValue = toRaw(newValue)
+        rawValue.forEach((group : any) => {
+            group.subjects.forEach((id: any) => {
+                const selectedSubject = props.cursos.find((curso: any) => curso.ID === id )
+                selectedSubject.status = true
+                selectedData.value.selectedSubjects.push(selectedSubject)
+                console.log('SUBJECT', selectedSubject)
+            })
+        })
+    }
+    console.log('SUBJECT SELECTED', selectedData.value.selectedSubjects)
+},{deep: true})
 
 const onToggleTeacher = (item: any) => {
     const index = selectedData.value.selectedTeachers.findIndex(
@@ -259,6 +274,8 @@ const onToggleSubjects = (item: any) => {
     } else if (!item.status && index !== -1) {
         selectedData.value.selectedSubjects.splice(index, 1);
     }
+
+    console.log('SUBJECTS SELECTED', selectedData.value.selectedSubjects)
 };
 
 const onToggleRooms = (item: any) => {

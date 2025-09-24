@@ -21,6 +21,8 @@ impl<'a> GenomeBuilder<HorarioGenome> for HorarioBuilder<'a> {
                 let teacher_id: usize =
                     create_teacher_by_subject(&self.config.teachers, &self.config.subjects, subject_id).expect("teacher invalido");
 
+                // println!("SUBJECT: {:?}", subject);
+
                 genes.push(ClaseProgramada {
                     group_id: group.id,
                     curso_id: subject_id,
