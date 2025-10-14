@@ -11,7 +11,7 @@ import (
 func GetSchedule(c echo.Context) error {
 	assigment_id := c.Param("assigment_id")
 	var schedule model.Schedule
-	println("ASSIGMENTID", assigment_id)
+	// println("ASSIGMENTID", assigment_id)
 	if err := db.DB.Where("assignment_id = ?", assigment_id).First(&schedule).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error al obtener horario"})
 	}

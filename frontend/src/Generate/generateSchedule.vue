@@ -32,7 +32,7 @@
                 />
             </TabPanel>
             <TabPanel value="1">
-                <secondTab @start-process="runProcess" :execution-result="executionResult" />
+                <secondTab @start-process="runProcess" :execution-result="executionResult" :execution-progress="executionProgress" :schedule-id="scheduleId"/>
             </TabPanel>
         </TabPanels>
     </Tabs>
@@ -41,7 +41,7 @@
 import { Button, Tabs, TabList, Tab, TabPanels, TabPanel } from "primevue";
 import firstTab from "./firstTab.vue";
 import secondTab from "./secondTab.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
 import { getAllCourses } from "../../api/cursosApi";
@@ -50,8 +50,13 @@ import { getAllTeachers } from "../../api/profesoresApi";
 import { getAllTemplates } from "../../api/templateApi";
 import { getAllGroups } from "../../api/grupoApi";
 import { createAssigment } from "../../api/assigmentApi";
+import { useSseStore } from '../../store/serverEvents'
+
+const sse = useSseStore()
 
 const executionResult = ref()
+const executionProgress = ref()
+const scheduleId = ref()
 
 const data = ref({
     start: false,
@@ -77,7 +82,6 @@ const runProcessData = ref({
 });
 
 const tab1Data = (value: any) => {
-    console.log("VALUE TAB1", value);
     runProcessData.value.selectedData = value;
 };
 
@@ -90,6 +94,7 @@ const grupos = ref();
 const changeTab = (value: any) => (data.value.tab = value);
 
 onMounted(async () => {
+    sse.connect(1)
     profesores.value = await getAllTeachers();
     cursos.value = await getAllCourses();
     salones.value = await getAllRooms();
@@ -97,15 +102,24 @@ onMounted(async () => {
     grupos.value = await getAllGroups();
 
     console.log("GROUPS", grupos.value);
+    console.log('SSE', sse)
+    console.log('SSE', sse.messages)
 });
 
+watch(sse.messages, (msg) => {
+  if (msg) {
+    console.log('MSG', msg)
+    executionProgress.value = sse.progress
+    if (sse.scheduleId !== ""){
+        scheduleId.value = sse.scheduleId
+    }
+  }
+})
+
 const runProcess = async (value: any) => {
-    console.log("TAB2VALUE", value);
     runProcessData.value.processData = value;
-    console.log("RUNPROCESS", runProcessData.value);
     const result = await createAssigment(runProcessData.value);
     console.log('RESULT EXECUTION', result.data)
     executionResult.value = result.data
-    console.log("EXECUTION RESULT", executionResult.value)
 };
 </script>

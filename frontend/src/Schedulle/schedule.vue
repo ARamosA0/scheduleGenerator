@@ -11,28 +11,17 @@
             <p class="text-lg">Horario generado del 2024-01-15</p>
         </div>
         <div class="flex flex-row col-span-4">
-            <Button label="Exportar" class="ml-3" />
-            <!-- <Button label="Imprimir" class="ml-3" />
-            <Button label="Regenerar" class="ml-3" /> -->
+            <Button label="Exportar" class="ml-3" @click="exportToPDF"/>
         </div>
     </div>
 
-    <div class="grid grid-cols-4 gap-3">
+    <div class="grid grid-cols-3 gap-3" v-if="data.bestFitness !== null && data.bestFitness !== undefined">
         <Card>
             <template #content>
                 <i class="pi pi-calendar" />
                 <div class="flex flex-col">
                     <p>Fitness</p>
-                    <p>95.0%</p>
-                </div>
-            </template>
-        </Card>
-        <Card>
-            <template #content>
-                <i class="pi pi-clock" />
-                <div class="flex flex-col">
-                    <p>Conflictos</p>
-                    <p>2</p>
+                    <p>{{ data.bestFitness }}</p>
                 </div>
             </template>
         </Card>
@@ -41,7 +30,7 @@
                 <i class="pi pi-replay" />
                 <div class="flex flex-col">
                     <p>Generaciones</p>
-                    <p>150</p>
+                    <p>{{ data.iteration }}</p>
                 </div>
             </template>
         </Card>
@@ -50,20 +39,11 @@
                 <i class="pi pi-clock" />
                 <div class="flex flex-col">
                     <p>Duracion</p>
-                    <p>15m 23s</p>
+                    <p>{{ data.duration }} s</p>
                 </div>
             </template>
         </Card>
     </div>
-
-    <!-- <div>
-        <Select
-            v-model="data.displayPeriodUom"
-            :options="periodsOptions"
-            optionLabel="name"
-            optionValue="value"
-        />
-    </div> -->
 
     <Card class="mb-50">
         <template #title>
@@ -79,6 +59,7 @@
         <template #content>
             <SchoolSchedule
                 v-if="data.items"
+                ref="scheduleRef"
                 :days="days"
                 startHour="07:00"
                 endHour="22:00"
@@ -105,6 +86,11 @@ import CalendarView from "../common/calendarView.vue";
 import SchoolSchedule from "../common/SchoolSchedule.vue";
 
 import { useRouter, useRoute } from "vue-router";
+// import html2canvas from "html2canvas";
+// import domtoimage from "dom-to-image-more";
+import html2pdf from "html2pdf.js";
+
+const scheduleRef =ref(null)
 
 const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sabado'];
 
@@ -136,6 +122,9 @@ const props = defineProps({
 const data = ref({
     displayPeriodUom: "month",
     items: null,
+    bestFitness: null,
+    iteration: null,
+    duration: null,
 });
 
 const periodsOptions = ref([
@@ -145,13 +134,74 @@ const periodsOptions = ref([
 ]);
 
 const getSchedule = async () => {
-    console.log("ASSIGMENTIDS", route.params.id);
     const response = await getScheduleById(route.params.id.toString());
-    data.value.items = response.schedule_response;
-    console.log("ITEMS", response.schedule_response);
+    console.log("ITEMS", response);
+    data.value.items = response.schedule_response.bestGeneration;
+    data.value.bestFitness = response.schedule_response.bestFitness
+    data.value.iteration = response.schedule_response.iteration
+    data.value.duration = response.schedule_response.time
+    console.log("DATA.VALUES", data.value)
 };
 
 onMounted( async() => {
     await getSchedule();
 });
+
+const exportToPDF = () => {
+  if (!scheduleRef.value) return;
+
+  const element = scheduleRef.value.$el ?? scheduleRef.value;
+
+  const opt = {
+    margin:       0.5,
+    filename:     "horario.pdf",
+    image:        { type: "jpeg", quality: 0.98 },
+    html2canvas:  { scale: 2 },   // mayor resolución
+    jsPDF:        { unit: "in", format: "a4", orientation: "landscape" }
+  };
+
+  html2pdf().set(opt).from(element).save();
+};
+
+// const exportSchedule = async () => {
+//   if (!scheduleRef.value) return;
+
+//   const canvas = await html2canvas(scheduleRef.value.$el ?? scheduleRef.value, {
+//     scale: 2, 
+//     backgroundColor: "#ffffff" 
+//   });
+
+//   const dataUrl = canvas.toDataURL("image/png");
+//   const link = document.createElement("a");
+//   link.href = dataUrl;
+//   link.download = "horario.png";
+//   link.click();
+// };
+
+// const exportSchedule = async () => {
+//       const node = scheduleRef.value.$el ?? scheduleRef.value;
+  
+//   const scale = 3; // 2 o 3 veces más grande
+//   const style = {
+//     transform: `scale(${scale})`,
+//     transformOrigin: "top left",
+//     width: `${node.offsetWidth}px`,
+//     height: `${node.offsetHeight}px`,
+//   };
+
+//   const param = {
+//     width: node.offsetWidth * scale,
+//     height: node.offsetHeight * scale,
+//     style,
+//     quality: 1, // máxima calidad (JPEG)
+//     bgcolor: "#ffffff", // fondo blanco
+//   };
+
+//   domtoimage.toPng(node, param).then((dataUrl) => {
+//     const link = document.createElement("a");
+//     link.href = dataUrl;
+//     link.download = "horario.png";
+//     link.click();
+//   });
+// };
 </script>

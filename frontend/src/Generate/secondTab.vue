@@ -150,7 +150,7 @@
                     <p class="mt-3 font-bold text-lg">Progreso general</p>
                     <span> 0% </span>
                     <ProgressBar
-                        :value="processStatus.progrecion"
+                        :value="props.executionProgress"
                         class="mt-3"
                     ></ProgressBar>
 
@@ -192,7 +192,7 @@
                             <Button 
                             :disabled="processStatus.finish"
                             label="Ver Horario" 
-                            @click="router.push({ name: 'calendario', params: { id: processStatus.scheduleId } })" 
+                            @click="router.push({ name: 'calendario', params: { id: props.scheduleId } })" 
                             class="w-full"
                             />
                         </div>
@@ -221,6 +221,14 @@ const props = defineProps({
     },
     executionResult: {
         type: Object,
+        default: null
+    },
+    executionProgress: {
+        type: Number,
+        default: 0
+    },
+    scheduleId: {
+        type: String,
         default: null
     }
 });

@@ -50,11 +50,6 @@ impl Display for HorarioGenomeDisplay {
 pub fn execute_process(config: &AlgorithmConfig) -> ScheduleResponse {
     let subjects: &Vec<Subject> = &config.subjects;
     let group: &Vec<Group> = &config.groups;
-
-    // let fitness_calc = FitnessCalc {
-    //     subject: subjects.clone(),
-    //     config: &config,
-    // };
     let fitness_calc = FitnessCalc::from_vec(subjects, config);
 
     let horario_builder = HorarioBuilder {
@@ -67,6 +62,7 @@ pub fn execute_process(config: &AlgorithmConfig) -> ScheduleResponse {
         .with_genome_builder(horario_builder)
         .of_size(config.population)
         .uniform_at_random();
+
 
     let mut simulacion = simulate(
         genetic_algorithm()
@@ -104,8 +100,8 @@ pub fn execute_process(config: &AlgorithmConfig) -> ScheduleResponse {
             .build(),
     )
     .until(or(
-        // FitnessLimit::new(100),
-        TimeLimit::new(Duration::minutes(60)), 
+        FitnessLimit::new(100),
+        // TimeLimit::new(Duration::minutes(60)), 
         GenerationLimit::new(config.generations),
     ))
     .build();
@@ -133,18 +129,22 @@ pub fn execute_process(config: &AlgorithmConfig) -> ScheduleResponse {
                 let formated_best_genome = format_schedule_response((best_genome), &config);
 
                 break ScheduleResponse {
+                    assigment_id: 0,
                     bestGeneration: formated_best_genome,
                     bestFitness: best.solution.fitness,
-                    iteration: step.iteration
+                    iteration: step.iteration,
+                    time: 0,
                 };
 
             }
             Err(error) => {
                 println!("Error: {}", error);
                 break ScheduleResponse {
+                    assigment_id: 0,
                     bestGeneration: Vec::<BestGenome>::new(),
                     bestFitness: 0,
                     iteration: 0,
+                    time: 0,
                 };
             }
         }

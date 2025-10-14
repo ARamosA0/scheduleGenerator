@@ -38,10 +38,6 @@ impl<'a> GenomeBuilder<HorarioGenome> for HorarioBuilder<'a> {
     }
 }
 
-fn random_teacher<R: Rng + ?Sized>(rng: &mut R, max: usize) -> usize {
-    rng.gen_range(1..max)
-}
-
 fn random_day<R: Rng + ?Sized>(rng: &mut R, max: usize) -> usize {
     rng.gen_range(0..max)
 }

@@ -12,7 +12,7 @@ export const getScheduleById = async (scheduleId: string) => {
   try {
     console.log("SCHEDULEID", scheduleId);
     const response = await api.get(`/schedule/${scheduleId}`);
-    console.log("RESPONSE", response);
+    console.log("RESPONSE", response.data);
     return response.data;
   } catch (error) {
     console.log("ERRRO API SCHEDULE", error);

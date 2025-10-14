@@ -25,7 +25,7 @@
             </Card>
         </div>
     </div>
-    <Card class="mt-5">
+    <!-- <Card class="mt-5">
         <template #title>
             <i class="pi pi-file-arrow-up" />
             Resumen del Sistema
@@ -42,7 +42,7 @@
                 </div>
             </div>
         </template>
-    </Card>
+    </Card> -->
 </template>
 <script lang="ts" setup>
 import { ref } from "vue";
