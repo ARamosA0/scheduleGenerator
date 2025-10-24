@@ -6,7 +6,7 @@ services:
       - "8088:8088"
     volumes:
       - ./algoritm-service:/app
-    command: cargo watch -x run
+    command: cargo run
     networks:  # ← Añadir esta línea
       - backend-network  # ← Añadir esta línea
 

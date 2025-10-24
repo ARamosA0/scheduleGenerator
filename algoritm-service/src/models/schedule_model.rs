@@ -8,9 +8,11 @@ use std::fmt;
 // ==============================
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ScheduleResponse {
+    pub assigment_id: usize,
     pub bestGeneration: Vec<BestGenome>,  
     pub bestFitness: usize,
     pub iteration: u64,
+    pub time:i64
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]

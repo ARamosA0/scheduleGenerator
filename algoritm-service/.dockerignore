@@ -1,8 +1,6 @@
 # Evitar archivos innecesarios
 target
 **/target
-Cargo.lock
-Cargo.toml.orig
 *.rs.bk
 
 # Archivos y carpetas comunes

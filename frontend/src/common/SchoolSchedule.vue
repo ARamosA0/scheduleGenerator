@@ -1,6 +1,5 @@
 <template>
   <div class="font-sans text-gray-900">
-    <!-- Header -->
     <div class="grid sticky top-0 bg-white z-20 border-b border-gray-200"
 :style="{ gridTemplateColumns: `150px repeat(${days.length}, 1fr)` }">
       <div class="h-11 border-r border-gray-200"></div>
@@ -9,9 +8,7 @@
       </div>
     </div>
 
-    <!-- Body -->
     <div class="grid grid-cols-[100px_1fr]" >
-      <!-- Time column -->
       <div class="border-r border-gray-200">
         <div
           v-for="t in gridTimes"
@@ -23,9 +20,7 @@
         </div>
       </div>
 
-      <!-- Days grid -->
       <div class="relative grid" :style="{ gridTemplateColumns: `repeat(${days.length}, 1fr)` }">
-        <!-- background rows -->
         <template v-for="t in gridTimes" :key="t.key + '-bg'">
           <div
             v-for="i in days.length"
@@ -35,7 +30,6 @@
           />
         </template>
 
-        <!-- events -->
         <div
           v-for="ev in laidOutEvents"
           :key="ev.id"
@@ -52,7 +46,6 @@
             <span v-if="ev.teacher">• {{ ev.teacher }}</span>
           </div>
 
-          <!-- tooltip -->
           <div
             v-if="hoverId === ev.id"
             class="absolute bottom-1 left-1 bg-gray-900 text-white rounded-md p-2 text-xs shadow-lg w-max max-w-xs"
@@ -65,18 +58,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Legend -->
-    <!-- <div v-if="legend && legend.length" class="mt-3 flex flex-wrap gap-2.5">
-      <div
-        v-for="item in legend"
-        :key="item.label"
-        class="inline-flex items-center gap-1.5 text-xs text-gray-700"
-      >
-        <span class="w-2.5 h-2.5 rounded-full inline-block" :style="{ background: item.color }"></span>
-        {{ item.label }}
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -94,10 +75,10 @@ const TIMEZONE = "America/Lima";
 
 type EventItem = {
   id: string | number;
-  DayIndex: number; // 0..days.length-1
+  dayIndex: number; 
   subject: string;
-  startDate: string; // "HH:MM"
-  endDate: string;   // "HH:MM"
+  startDate: string;
+  endDate: string;  
   room?: string | number;
   teacher?: string;
   color?: string;
@@ -125,7 +106,7 @@ function toMinutesFromString(iso: string): number {
 }
 
 function toMinutes(iso: string): number {
-  const hhmm = iso.substring(11, 16); // "20:00"
+  const hhmm = iso.substring(11, 16);
   const [h, m] = hhmm.split(':').map(Number);
   return h * 60 + m;
 }
@@ -136,44 +117,37 @@ const rows = computed(() => Math.ceil(totalMinutes.value / props.slotMinutes));
 const rowHeight = computed(() => props.rowHeight);
 
 const gridTimes = computed(() => {
-  // Muestra etiqueta cada hora “redonda”
   const out: { key: string; label: string; showLabel: boolean }[] = [];
   for (let i = 0; i < rows.value; i++) {
     const minutesFromStart = i * props.slotMinutes + dayStart.value;
     const h = Math.floor(minutesFromStart / 60);
     const m = minutesFromStart % 60;
     const label = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-    const showLabel = m === 0; // etiqueta cada 60 min
+    const showLabel = m === 0; 
     out.push({ key: `t-${i}`, label, showLabel });
   }
   return out;
 });
 
-// Layout de eventos: calcula top/height y columna; maneja choques con "lanes"
 type LaidOut = EventItem & {
-  top: number;        // px
-  height: number;     // px
-  col: number;        // 0..days-1
-  lane: number;       // carril por choque
-  lanesInColSlot: number; // total de carriles para ese intervalo y día
+  top: number;       
+  height: number;   
+  col: number;       
+  lane: number;      
+  lanesInColSlot: number;
 };
 
 const laidOutEvents = computed<LaidOut[]>(() => {
-  // Agrupar por día
   const byDay: Record<number, EventItem[]> = {};
-  console.log('PROPS.EVENT', props.events)
   const rawEvents = toRaw(props.events)
   rawEvents.forEach(ev => {
-    if (ev.DayIndex < 0 || ev.DayIndex >= props.days.length) return;
-    (byDay[ev.DayIndex] ||= []).push(ev);
+    if (ev.dayIndex < 0 || ev.dayIndex >= props.days.length) return;
+    (byDay[ev.dayIndex] ||= []).push(ev);
   });
 
   const result: LaidOut[] = [];
 
-  console.log('BYDAYS', byDay)
   for (let d = 0; d < props.days.length; d++) {
-    // console.log('d', d)
-    // const evs = (byDay[d] || []).slice().sort((a, b) => toMinutes(a.endDate) - toMinutes(b.startDate));
     const evs = (byDay[d] || [])
     .map(ev => ({
       ...ev,
@@ -183,9 +157,6 @@ const laidOutEvents = computed<LaidOut[]>(() => {
     .slice()
     .sort((a, b) => toMinutes(a.endDate) - toMinutes(b.startDate));
 
-    console.log('EVS -- UPDATE', evs)
-
-    // Algoritmo de lanes por choques (line sweep simple)
     type Active = { end: number; lane: number };
     const active: Active[] = [];
     let maxLaneUsed = 0;
@@ -214,7 +185,6 @@ const laidOutEvents = computed<LaidOut[]>(() => {
       pushActive(e, lane);
       maxLaneUsed = Math.max(maxLaneUsed, lane);
 
-      // hallar cuántos lanes simultáneos hay en este punto
       const lanesNow = Math.max(...active.map(a => a.lane), 0) + 1;
       intervals.push({ start: s, end: e, lanes: lanesNow });
 
@@ -226,14 +196,13 @@ const laidOutEvents = computed<LaidOut[]>(() => {
       result.push({
         ...ev,
         top: topPx,
-        height: Math.max(heightPx, 0), // evita negativos
+        height: Math.max(heightPx, 0), 
         col: d,
         lane,
         lanesInColSlot: lanesNow
       });
     });
 
-    // Normaliza lanesInColSlot por cluster
     result
       .filter(r => r.col === d)
       .forEach(r => {
@@ -258,7 +227,7 @@ function eventStyle(ev: LaidOut) {
     height: ev.height + 'px',
     left: left + '%',
     width: laneWidth + '%',
-    background: ev.color || 'rgba(59,130,246,0.12)',  // por defecto azul suave
+    background: ev.color || 'rgba(59,130,246,0.12)',
     borderLeft: `4px solid ${ev.color || '#3b82f6'}`
   };
 }
@@ -269,7 +238,7 @@ function prettyTime(isoDate: string) {
   return date.toLocaleTimeString("es-PE", {
     hour: "2-digit",
     minute: "2-digit",
-    hour12: false, // <-- fuerza formato 24h
+    hour12: false,
   });
 }
 

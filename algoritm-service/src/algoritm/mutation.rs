@@ -7,6 +7,7 @@ use genevo::{operator::prelude::*, prelude::*, random::Rng, types::fmt::Display}
 use serde::Serialize;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
+use std::collections::HashMap;
 
 impl RandomValueMutation for ClaseProgramada {
     fn random_mutated<R>(value: Self, _min: &Self, _max: &Self, rng: &mut R) -> Self

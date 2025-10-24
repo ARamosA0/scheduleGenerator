@@ -5,27 +5,29 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
 type Schedule struct {
 	gorm.Model
-	Assignment_id     uint        `json:"assigment_id"`
-	Assignment        Assignment  `gorm:"foreignKey:Assignment_id"`
-	ScheduleResponses BestGenomes `json:"schedule_response" gorm:"type:json"`
+	Assignment_id    uint           `json:"assigment_id"`
+	Assignment       Assignment     `gorm:"foreignKey:Assignment_id"`
+	ScheduleResponse datatypes.JSON `json:"schedule_response" gorm:"type:jsonb"`
 }
 
 type ScheduleResponse struct {
-	ID             uint         `json:"id"`
-	Bestgeneration []BestGenome `json:"bestGeneration"`
-	BestFitness    int          `json:"bestFitness"`
-	Iteration      int          `json:"iteration"`
-	ScheduleId     uint         `json:"scheduleId"`
+	ID             uint        `json:"id" gorm:"primaryKey"`
+	Bestgeneration BestGenomes `json:"bestGeneration" gorm:"type:jsonb"`
+	BestFitness    float64     `json:"bestFitness"`
+	Iteration      float64     `json:"iteration"`
+	Time           float64     `json:"time"`
+	ScheduleId     uint        `json:"scheduleId"`
 }
 
 type BestGenome struct {
 	ID        uint   `json:"id"`
-	DayIndex  uint   `json:dayIndex`
+	DayIndex  uint   `json:"dayIndex"`
 	StartDate string `json:"startDate"`
 	EndDate   string `json:"endDate"`
 	Subject   string `json:"subject"`

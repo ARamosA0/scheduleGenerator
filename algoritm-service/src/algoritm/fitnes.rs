@@ -28,22 +28,27 @@ const MAX_FREE_PERIODS: usize = 2;
 
 #[derive(Clone, Debug)]
 pub struct FitnessCalc<'a> {
-    pub subjects: &'a [Subject], // Más idiomático usar slice
-    pub config: &'a AlgorithmConfig, // Mejor nombre que 'param'
+    pub subjects: &'a [Subject],
+    pub subject_map: HashMap<usize, &'a Subject>,
+    pub config: &'a AlgorithmConfig, 
 }
 
 impl<'a> FitnessCalc<'a> {
     pub fn new(subjects: &'a [Subject], config: &'a AlgorithmConfig) -> Self {
-        Self { subjects, config }
+        let subject_map = subjects.iter().map(|s| (s.id, s)).collect();
+        Self { subjects, subject_map, config }
     }
 
     // Constructor alternativo desde Vec (para compatibilidad)
     pub fn from_vec(subjects: &'a Vec<Subject>, config: &'a AlgorithmConfig) -> Self {
+        let subject_map = subjects.iter().map(|s| (s.id, s)).collect();
         Self { 
             subjects: subjects.as_slice(), 
+            subject_map,
             config 
         }
     }
+
 
     /// Validaciones de slots válidos
     fn validate_slot_bounds(&self, genome: &HorarioGenome) -> usize {
@@ -66,7 +71,8 @@ impl<'a> FitnessCalc<'a> {
 
         let mut penalty = 0;
         for (subject_id, count) in subject_counts {
-            if let Some(subject) = self.subjects.iter().find(|s| s.id == subject_id) {
+            // if let Some(subject) = self.subjects.iter().find(|s| s.id == subject_id) {
+            if let Some(subject) = self.subject_map.get(&subject_id) {
                 if count > subject.hours as usize {
                     penalty += PENALTY_EXCESS_HOURS * (count - subject.hours as usize);
                 }
@@ -188,6 +194,7 @@ impl<'a> FitnessCalc<'a> {
 
     /// Calcula el fitness final basado en el penalty total
     fn calculate_final_fitness(&self, total_penalty: usize, genome_size: usize) -> usize {
+
         let max_penalty = genome_size * PENALTY_INVALID_SLOT;
         
         if total_penalty == 0 {
@@ -237,85 +244,4 @@ impl<'a> FitnessFunction<HorarioGenome, usize> for FitnessCalc<'a> {
 
     fn highest_possible_fitness(&self) -> usize { 100 }
     fn lowest_possible_fitness(&self) -> usize { 0 }
-}
-
-#[derive(Debug)]
-pub struct ScheduleDiagnostics {
-    pub violations: Vec<String>,
-    pub fitness_score: usize,
-    pub total_penalty: usize,
-}
-
-impl<'a> FitnessCalc<'a> {
-    /// Función mejorada de diagnóstico que retorna información estructurada
-    pub fn diagnose(&self, genome: &HorarioGenome) -> ScheduleDiagnostics {
-        let mut violations = Vec::new();
-        let mut classes_by_course_day: HashMap<CourseDay, Vec<usize>> = HashMap::new();
-        
-        // Agrupar clases por día y curso
-        for clase in genome {
-            classes_by_course_day
-                .entry((clase.dia, clase.curso_id))
-                .or_default()
-                .push(clase.bloque);
-        }
-        
-        // Verificar violaciones
-        for ((day, course_id), mut periods) in classes_by_course_day {
-            periods.sort_unstable();
-            
-            if periods.len() > MAX_CONSECUTIVE_PERIODS {
-                violations.push(format!(
-                    "Día {}, Curso {}: {} períodos exceden el máximo de {}", 
-                    day, course_id, periods.len(), MAX_CONSECUTIVE_PERIODS
-                ));
-            }
-            
-            if periods.len() >= 2 {
-                let is_consecutive = periods.windows(2)
-                    .all(|w| w[1] == w[0] + 1);
-                
-                if !is_consecutive {
-                    violations.push(format!(
-                        "Día {}, Curso {}: períodos no consecutivos {:?}", 
-                        day, course_id, periods
-                    ));
-                }
-            }
-        }
-
-        let fitness_score = self.fitness_of(genome);
-        let total_penalty = self.calculate_total_penalty(genome);
-        
-        ScheduleDiagnostics {
-            violations,
-            fitness_score,
-            total_penalty,
-        }
-    }
-
-    fn calculate_total_penalty(&self, genome: &HorarioGenome) -> usize {
-        let mut total = 0;
-        total += self.validate_slot_bounds(genome);
-        total += self.validate_subject_hours(genome);
-        total += self.validate_resource_conflicts(genome);
-        total += self.validate_adjacent_classes(genome);
-        total += self.validate_consecutive_periods(genome);
-        total
-    }
-}
-
-impl fmt::Display for ScheduleDiagnostics {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "=== DIAGNÓSTICO DE HORARIO ===")?;
-        writeln!(f, "Fitness Score: {}", self.fitness_score)?;
-        writeln!(f, "Total Penalty: {}", self.total_penalty)?;
-        writeln!(f, "Violaciones encontradas: {}", self.violations.len())?;
-        
-        for violation in &self.violations {
-            writeln!(f, "  - {}", violation)?;
-        }
-        
-        Ok(())
-    }
 }

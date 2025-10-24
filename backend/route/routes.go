@@ -18,4 +18,7 @@ func RegisterRoutes(e *echo.Echo) {
 	request.RegisterScheduleRoutes(api)
 	request.RegisterValidateDataRoutes(api)
 	request.RegisterGroupRoutes(api)
+
+	request.HandleServerEvents(api)
+
 }
