@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Copia e instala dependencias
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci 
 
 # Copia el resto del código y construye el frontend
 COPY . .
