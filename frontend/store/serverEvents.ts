@@ -36,7 +36,8 @@ export const useSseStore = defineStore('sse', {
             this.eventSource.onmessage = (event) => {
                 console.log('Evento recibido:', event.data)
                 const data = JSON.parse(event.data) as ProcessEventMessage
-                this.progress = data.progress
+                console.log('DATA', data)
+                this.progress = data.progress 
                 this.scheduleId = data.scheduleId
                 this.messages.push(data)
                 

@@ -19,9 +19,9 @@ type Schedule struct {
 type ScheduleResponse struct {
 	ID             uint        `json:"id" gorm:"primaryKey"`
 	Bestgeneration BestGenomes `json:"bestGeneration" gorm:"type:jsonb"`
-	BestFitness    int         `json:"bestFitness"`
-	Iteration      int         `json:"iteration"`
-	Time           int         `json:"time"`
+	BestFitness    float64     `json:"bestFitness"`
+	Iteration      float64     `json:"iteration"`
+	Time           float64     `json:"time"`
 	ScheduleId     uint        `json:"scheduleId"`
 }
 

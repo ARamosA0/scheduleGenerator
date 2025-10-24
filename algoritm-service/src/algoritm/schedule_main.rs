@@ -47,7 +47,10 @@ impl Display for HorarioGenomeDisplay {
     }
 }
 
-pub fn execute_process(config: &AlgorithmConfig) -> ScheduleResponse {
+pub fn execute_process<F>(config: &AlgorithmConfig, mut on_progress: F) -> ScheduleResponse 
+where 
+    F: FnMut(u64, &usize, usize)
+{
     let subjects: &Vec<Subject> = &config.subjects;
     let group: &Vec<Group> = &config.groups;
     let fitness_calc = FitnessCalc::from_vec(subjects, config);
@@ -116,6 +119,7 @@ pub fn execute_process(config: &AlgorithmConfig) -> ScheduleResponse {
                     step.result.evaluated_population.average_fitness(),
                     best_fitness
                 );
+                on_progress(step.iteration, step.result.evaluated_population.average_fitness(), best_fitness);
             }
             Ok(SimResult::Final(step, _time, _duration, stop_reason)) => {
                 let best = step.result.best_solution;

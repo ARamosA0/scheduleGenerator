@@ -1,0 +1,36 @@
+FROM golang:1.24 AS builder
+
+# Configura el directorio de trabajo
+WORKDIR /app
+
+# Copia los archivos de dependencias y descárgalas
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copia el resto del código fuente
+COPY . .
+
+# Compila el binario principal en modo producción
+# Ajusta "./cmd/api" o "./main.go" según tu estructura
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o app .
+
+# Compila también el migrador si lo usas
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o migrate ./migrate
+
+# Etapa 2: Imagen final mínima
+FROM alpine:3.20
+
+# Añade certificados SSL si tu app hace requests HTTPS
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /app
+
+# Copia solo los binarios desde la etapa de compilación
+COPY --from=builder /app/app .
+COPY --from=builder /app/migrate .
+
+# Exponer el puerto (ajústalo a tu API)
+EXPOSE 8080
+
+# Ejecutar el binario principal
+CMD ["./app"]

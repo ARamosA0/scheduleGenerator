@@ -1,11 +1,13 @@
 package services
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"backend.com/backend/internal/db"
@@ -124,6 +126,7 @@ func CreateAssigment(c echo.Context) error {
 		sendEvent(assignment.ID, "Proceso iniciado ", "__START__", 0, "")
 
 		jsonData, _ := json.Marshal(assignment)
+		// HTTP POST
 		resp, err := http.Post("http://algoritm-service:8088/generar", "application/json", bytes.NewBuffer(jsonData))
 		if err != nil {
 			sendEvent(assignment.ID, fmt.Sprintf(" Error enviando a Rust: %v", err), "__ERROR__", 100, "")
@@ -134,11 +137,60 @@ func CreateAssigment(c echo.Context) error {
 
 		sendEvent(assignment.ID, "Procesando algoritmo en Rust...", "__START__", 0, "")
 
-		body, _ := io.ReadAll(resp.Body)
+		// body, _ := io.ReadAll(resp.Body)
+		var buf bytes.Buffer
+		tee := io.TeeReader(resp.Body, &buf)
+
+		scanner := bufio.NewScanner(tee)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if strings.HasPrefix(line, "data:") {
+				jsonPart := strings.TrimPrefix(line, "data:")
+				jsonPart = strings.TrimSpace(jsonPart)
+
+				var event model.ScheduleResponse
+				if err := json.Unmarshal([]byte(jsonPart), &event); err != nil {
+					fmt.Println("Error al decodificar JSON:", err)
+					continue
+				}
+
+				processProgress := (event.Iteration / float64(assignment.Generations)) * 100
+				sendEvent(assignment.ID,
+					fmt.Sprintf("Progreso %.1f%%", processProgress),
+					"progress", uint(event.Iteration), "")
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			sendEvent(assignment.ID, fmt.Sprintf("Error leyendo stream: %v", err), "__ERROR__", 100, "")
+		}
+
+		body := buf.Bytes()
+		fmt.Println("TEE", tee)
+		fmt.Println("BODY", string(body))
+
+		lines := strings.Split(string(body), "\n")
+		var lastJSON string
+		for i := len(lines) - 1; i >= 0; i-- {
+			line := strings.TrimSpace(lines[i])
+			if strings.HasPrefix(line, "data:") {
+				lastJSON = strings.TrimPrefix(line, "data:")
+				lastJSON = strings.TrimSpace(lastJSON)
+				break
+			}
+		}
+
+		if lastJSON == "" {
+			fmt.Println("No se encontró JSON final en el stream")
+			return
+		}
+
+		// MANEJO DEL RESULTADO
 		var rustResult model.ScheduleResponse
-		if err := json.Unmarshal(body, &rustResult); err != nil {
+
+		if err := json.Unmarshal([]byte(lastJSON), &rustResult); err != nil {
+			fmt.Println("SCHEDULE", rustResult)
 			sendEvent(assignment.ID, fmt.Sprintf(" Error decodificando respuesta: %v", err), "__ERROR__", 100, "")
-			db.DB.Model(&assignment).Update("Status", "error")
 			return
 		}
 
@@ -147,9 +199,18 @@ func CreateAssigment(c echo.Context) error {
 			Assignment_id:    uint(assignment.ID),
 			ScheduleResponse: datatypes.JSON(jsonBytes),
 		}
-		db.DB.Create(&schedule)
+
+		// db.DB.Create(&schedule)
+		fmt.Println("SCHEDULE", rustResult)
+		fmt.Println("SCHEDULERESPONSE", datatypes.JSON(jsonBytes))
+		if err := db.DB.Create(&schedule).Error; err != nil {
+			fmt.Println("Error insertando en DB:", err)
+		} else {
+			fmt.Println("Schedule insertado:", schedule)
+		}
 
 		scheduleIDStr := fmt.Sprintf("%d", schedule.ID)
+		fmt.Println("SCHEDULEID", schedule.ID)
 		sendEvent(assignment.ID, "Proceso completado correctamente.", "__END__", 100, scheduleIDStr)
 		sendEvent(assignment.ID, "__CLOSE__", "__END__", 100, scheduleIDStr)
 	}(data)
