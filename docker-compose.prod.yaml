@@ -17,8 +17,10 @@ services:
     env_file:
       - .env
     depends_on:
-      - postgres
-      - algoritm-service
+      postgres:
+        condition: service_healthy
+      algoritm-service:
+        condition: service_started
     networks:
       - backend-network
 
