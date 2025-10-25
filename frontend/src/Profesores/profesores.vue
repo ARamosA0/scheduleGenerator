@@ -48,7 +48,6 @@
                 <Column field="name" header="Nombre" />
                 <Column field="email" header="Email" />
                 <Column field="specialty" header="Especialidad" />
-                <Column field="available_days" header="Disponibilidad" />
                 <Column field="acciones" header="Acciones">
                     <template #body="slotProps" severity="secondary" rounded>
                         <Button

@@ -25,7 +25,7 @@ export const useSseStore = defineStore('sse', {
                 this.disconnect()
             }
             
-            const url = `http://localhost:8080/api/events?id=${userId}`
+            const url = `http://3.139.74.24:8080/api/events?id=${userId}`
             this.eventSource = new EventSource(url)
             
             this.eventSource.onopen = () => {
