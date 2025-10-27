@@ -132,11 +132,9 @@ func ExtractData(fileID string) ([]map[string]string, error) {
 		return nil, fmt.Errorf("el archivo no contiene datos suficientes")
 	}
 
-	// Asumimos que la primera fila son los nombres de las columnas
 	headers := rows[0]
 	dataRows := rows[1:]
 
-	// Convertir las filas en objetos con claves de columna
 	var result []map[string]string
 	for _, row := range dataRows {
 		rowMap := map[string]string{}

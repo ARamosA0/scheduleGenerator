@@ -29,6 +29,8 @@ WORKDIR /app
 COPY --from=builder /app/app .
 COPY --from=builder /app/migrate .
 
+RUN mkdir -p /app/temp && chmod 777 /app/temp
+
 # Exponer el puerto (ajústalo a tu API)
 EXPOSE 8080
 

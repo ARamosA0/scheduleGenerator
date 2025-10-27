@@ -8,6 +8,17 @@ services:
       - postgres
     networks:
       - backend-network
+  
+  migrate:
+    image: aldorama/schedule-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["./migrate"]
+    environment:
+      DATABASE_URL: "host=postgres user=postgres password=postgres dbname=mydatabase port=5432 sslmode=disable"
+    networks:
+      - backend-network
 
   backend:
     image: aldorama/schedule-backend
