@@ -56,7 +56,7 @@
                     <div class="flex justify-between items-center">
                         <div class="flex items-center">
                             <i class="pi pi-clock mr-2" />
-                            <span class="text-2xl font-bold">{{ d.day }}</span>
+                            <span class="text-2xl font-bold">{{ daysMaping[d.day] }}</span>
                             <ToggleSwitch
                                 class="ml-2"
                                 v-model="d.status"
@@ -137,6 +137,16 @@ const templates = ref([]);
 const selectedTemplate = ref({});
 const isCreate = ref(true);
 const updateEnabled = ref(false);
+
+const daysMaping = {
+    1: "Lunes",
+    2: "Martes",
+    3: "Miercoles",
+    4: "Jueves",
+    5: "Viernes",
+    6: "Sabado",
+    7: "Domingo"
+}
 
 onMounted(async () => {
     await getTemplates();

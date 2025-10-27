@@ -1,4 +1,5 @@
 <template>
+    {{ scheduleId }}
     <div class="grid grid-cols-12 gap-3">
         <Button
             icon="pi pi-angle-left"

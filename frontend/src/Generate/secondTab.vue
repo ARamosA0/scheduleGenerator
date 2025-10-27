@@ -1,4 +1,5 @@
 <template>
+    {{ props.scheduleId }}
     <div class="grid grid-cols-6 gap-4">
         <Card class="col-span-3">
             <template #title>
