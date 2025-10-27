@@ -105,9 +105,10 @@ func CreateAssigment(c echo.Context) error {
 				if ok {
 					fmt.Printf(" Enviando a cliente %d: %s\n", 1, msg)
 					event := model.ProcessEventMessage{
-						Message:  msg,
-						Progress: progress,
-						Status:   status,
+						Message:    msg,
+						Progress:   progress,
+						Status:     status,
+						ScheduleId: scheduleId,
 					}
 					data, _ := json.Marshal(event)
 					ch <- string(data)

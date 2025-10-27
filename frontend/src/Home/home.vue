@@ -25,24 +25,25 @@
             </Card>
         </div>
     </div>
-    <!-- <Card class="mt-5">
-        <template #title>
-            <i class="pi pi-file-arrow-up" />
-            Resumen del Sistema
-        </template>
-        <template #content>
-            <div class="grid grid-cols-4 gap-4 mt-2">
-                <div
-                    class="text-center"
-                    v-for="(data, index) in resumeData"
-                    :key="index"
-                >
-                    <p class="text-2x1 font-semibold">{{ data.value }}</p>
-                    <p class="text-base">{{ data.title }}</p>
-                </div>
-            </div>
-        </template>
-    </Card> -->
+        <div>
+            <Card class="mt-1">
+                <template #title>
+                    <div class="text-center">{{ historial.title }}</div>
+                </template>
+                <template #content>
+                    <div
+                        class="flex flex-col items-center justify-center gap-2"
+                    >
+                        <h5>{{ historial.subtitle }}</h5>
+                        <Button
+                            @click="router.push({ name: historial.btnRedirect })"
+                        >
+                            {{ historial.btnName }}
+                        </Button>
+                    </div>
+                </template>
+            </Card>
+        </div>
 </template>
 <script lang="ts" setup>
 import { ref } from "vue";
@@ -90,12 +91,19 @@ const cardsData = ref([
         btnRedirect: "generar",
     },
     {
+        // title: "Historial",
+        // subtitle: "Ver procesos ejecutados",
+        // btnName: "Ver Historial",
+        // btnRedirect: "historial",
+    },
+]);
+
+const historial = ref({
         title: "Historial",
         subtitle: "Ver procesos ejecutados",
         btnName: "Ver Historial",
         btnRedirect: "historial",
-    },
-]);
+})
 
 const resumeData = ref([
     {
